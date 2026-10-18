@@ -1,0 +1,130 @@
+{
+  "preset": "trailer",
+  "display_name": "Main Character Trailer",
+  "one_line": "One photo becomes a one-take trailer: rush, crash in, rise, crash in again, pull back wide, title.",
+  "lane": "sequencer",
+  "base_workflow": "workflows/_base_ltx25_i2v.api.json",
+  "workflow": null,
+  "custom_stage": "no new graph for shots: reuses vertigo + crash_zoom + levitate + the Pull Back clip; SG Bridge (workflows/bridge.api.json) generates the transitions; SGTitleCard lays the title",
+  "defaults": {
+    "width": 1088,
+    "height": 1920,
+    "fps": 24,
+    "total_s_ceiling": 12.0,
+    "seed": 11,
+    "cut": "one continuous take: match cuts only on identical framing, otherwise generated bridges; no dissolves, no fades, no fade to black (LAW-7, LAW-9)"
+  },
+  "shots": [
+    {
+      "preset": "vertigo",
+      "name": "vertigo",
+      "label": "Vertigo (the rush, native speed)",
+      "ramp": "linear",
+      "seconds": 1.5,
+      "src_in": 24,
+      "src_out": 59,
+      "reuse_glob": [
+        "vertigo_{tag}_v3_*.mp4"
+      ]
+    },
+    {
+      "preset": "crash_zoom",
+      "name": "crash_zoom",
+      "label": "Crash Zoom (whip in to the face, native speed)",
+      "ramp": "linear",
+      "seconds": 1.5,
+      "src_in": 1,
+      "src_out": 24,
+      "reuse_glob": [
+        "crash_zoom_{tag}_v2_*.mp4"
+      ],
+      "bridge_in": {
+        "mode": "whip",
+        "frames": 5,
+        "note": "LTX bridge from the vertigo settle cut internally; a 5-frame zoom whip reads as one move"
+      }
+    },
+    {
+      "preset": "levitate",
+      "name": "levitate",
+      "label": "Levitate (crash out to wide, rise to the apex)",
+      "ramp": "linear",
+      "seconds": 2.2917,
+      "src_in": 22,
+      "src_out": 76,
+      "reuse_glob": [
+        "levitate/levitate25v3_{tag}.mp4",
+        "levitate25v3_{tag}*.mp4"
+      ],
+      "bridge_in": {
+        "frames": 33
+      }
+    },
+    {
+      "preset": "crash_zoom",
+      "name": "face",
+      "label": "Face beat (generated crash in from the apex)",
+      "ramp": "linear",
+      "seconds": 0.0833,
+      "src_in": 24,
+      "src_out": 24,
+      "reuse_glob": [
+        "crash_zoom_{tag}_v2_*.mp4"
+      ],
+      "bridge_in": {
+        "frames": 33,
+        "prompt": "The shot continues in one unbroken take, no cut: the camera rushes forward fast and crash-zooms into a close-up of his face while he floats down, same man, same canyon, same light; a man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, in a red sandstone canyon with floating golden sparks. Both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic"
+      }
+    },
+    {
+      "preset": "earth_zoom",
+      "name": "pull_back",
+      "label": "Pull Back (generated crash out into the pillars, 4x pull-back)",
+      "ramp": "linear",
+      "seconds": 3.5,
+      "src_in": 0,
+      "src_out": 83,
+      "needs_qwen_stage": true,
+      "reuse_glob": [
+        "pull_back_{tag}_final.mp4"
+      ],
+      "bridge_in": {
+        "frames": 33,
+        "prompt": "The shot continues in one unbroken take, no cut: the camera pulls back fast from the close-up of his face to a wide shot, revealing him standing between tall twisted red sandstone pillars in hazy desert light; a man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, in a red sandstone canyon with floating golden sparks. Both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic"
+      }
+    }
+  ],
+  "title_card": {
+    "style": "lightbrush",
+    "position": "center",
+    "mode": "overlay",
+    "hold_s": 1.8,
+    "scale_in_frames": 6,
+    "title": "OPEN SAUCE",
+    "subtitle": "A LIGHTBRUSH PRESET",
+    "note": "rides the last 1.8 s of the Pull Back shot (no held frame); fully opaque from its first frame, letters slam in from 1.35x over 6 frames; poster = the wide canyon frame"
+  },
+  "grade_chip": "warm_film",
+  "seed_exposed": true,
+  "version": "v7 (one take: SG Bridge between shots, title slams in over the Pull Back; the experimental orbit shot was removed)",
+  "model": "LTX-2.5 distilled int8",
+  "input_requirements": [
+    "full body",
+    "face clearly visible, head not touching the frame edge",
+    "9:16 (1088x1920 finals; shots and bridges must share one size)"
+  ],
+  "known_issues": [
+    "reused shots keep their own sub-recipes only as ids in extra.shots; the trailer recipe's api_workflow is the cut plan (+ bridge settings), not a ComfyUI graph",
+    "bridges hold ~0.6 s on the start frame, then whip in ~6-8 frames (LTX-2.5 first/last-frame behaviour); the face close-up beat appears twice (crash in, then generated crash in from the apex)",
+    "LTX bridges cannot cross a perspective change (eye-level -> aerial) or a same-scale world swap: they dissolve or hard-cut; the Earth fly's two aerial hand-offs are whip-tilts (scripts/earth_fly_1080.py), not generated",
+    "Earth fly at 1080 is the 704x1280 chain upscaled (lanczos): its segment-B graph was never recorded",
+    "bridges add ~4.8 s: total ~16 s although the shot plan is ~11.5 s",
+    "2026-10-17: the experimental face->orbit \"earth_fly\" shot was removed from the trailer; it was built with end-image guides that dissolve, which the one-take rule forbids. The take now ends on the Pull Back."
+  ],
+  "bridges": {
+    "enabled": true,
+    "workflow": "workflows/bridge.api.json",
+    "match_threshold": 8.0,
+    "note": "per boundary: mean abs diff of A's last vs B's first frame < match_threshold -> match cut, else a bridge of bridge_in.frames (8k+1) rendered at the shots' size and cached by frame hash in outputs/trailer/bridges/; its first/last frames are dropped and the rest plays unretimed"
+  }
+}

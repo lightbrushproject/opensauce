@@ -1,0 +1,103 @@
+schema: comfy-build/1
+id: 54c6b375-242c-4f54-915b-6079f6a79551
+name: open-sauce
+description: ''
+syncedRevision: '2026-10-17T13:52:30.283661Z'
+definition:
+  schema: distribution-definition/0
+  baseComfyVersion: v0.41.2
+  models:
+    - blobId: 587cfa2d-ade0-4046-b956-433f986acf9f
+      filename: General.safetensors
+      localPath: BiRefNet/General.safetensors
+      sha256: 9ab37426bf4de0567af6b5d21b16151357149139362e6e8992021b8ce356a154
+      sizeBytes: 444473596
+      source: local
+      type: BiRefNet
+    - filename: ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors
+      sha256: c4279eeff115cbeaca494bd2183e7d768c38fe85a184dc6afbb7159157c44334
+      sourceUri: https://huggingface.co/Lightricks/LTX-2.5/resolve/main/diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors
+      type: diffusion_models
+    - filename: qwen-image-edit-2511-Q4_K_M.gguf
+      sha256: 5f2ef6c0bf59e5a15aaf8836fcb07d9424f36dd0f1a62e285cd3055c7b374fca
+      sourceUri: https://huggingface.co/unsloth/Qwen-Image-Edit-2511-GGUF/resolve/1daa38515d/qwen-image-edit-2511-Q4_K_M.gguf
+      type: diffusion_models
+    - filename: ltx-2.3-spatial-upscaler-x2-1.1.safetensors
+      localPath: latent_upscale_models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors
+      sha256: 5f416311fa8172b65af67530758964708d29a317b830d689a51143b7f91913ed
+      sizeBytes: 995743560
+      source: local
+      sourceUri: https://huggingface.co/Lightricks/LTX-2.3/resolve/main/ltx-2.3-spatial-upscaler-x2-1.1.safetensors
+      type: latent_upscale_models
+    - filename: ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors
+      sha256: eb5a71fe4068ee87ccdb1c3aa635e547ca76bd2d30ae20ae889f2c325c0677e8
+      sourceUri: https://huggingface.co/Lightricks/LTX-2.5/resolve/main/latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors
+      type: latent_upscale_models
+    - filename: gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors
+      sha256: 6ce688a0aa98a5fa36a9f1e6c3f42152a498cc2b53ee8c15674c64244f91487f
+      sourceUri: https://huggingface.co/Lightricks/LTX-2.5/resolve/main/text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors
+      type: text_encoders
+    - filename: qwen_2.5_vl_7b_fp8_scaled.safetensors
+      sha256: cb5636d852a0ea6a9075ab1bef496c0db7aef13c02350571e388aea959c5c0b4
+      sourceUri: https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors
+      type: text_encoders
+    - filename: ltx-2.5-audio-vae-bf16.safetensors
+      sha256: c52733d37f6a7fb7949c3dc0fb468c6cb2169e4d836983a73babb9f0d54837a5
+      sourceUri: https://huggingface.co/Lightricks/LTX-2.5/resolve/main/vae/ltx-2.5-audio-vae-bf16.safetensors
+      type: vae
+    - filename: ltx-2.5-video-vae-bf16.safetensors
+      sha256: 847e14ca7f3355debca0cea4eaa24ac0fbcdf0061da054ac89ca638a869ddba3
+      sourceUri: https://huggingface.co/Lightricks/LTX-2.5/resolve/main/vae/ltx-2.5-video-vae-bf16.safetensors
+      type: vae
+    - filename: qwen_image_vae.safetensors
+      sha256: a70580f0213e67967ee9c95f05bb400e8fb08307e017a924bf3441223e023d1f
+      sourceUri: https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors
+      type: vae
+  customNodes:
+    - gitRef: 6ea2651e7df66d7585f6ffee804b20e92fb38b8a
+      localPath: ComfyUI-GGUF
+      name: ComfyUI-GGUF
+      repository: https://github.com/city96/ComfyUI-GGUF
+      source: git
+    - gitRef: 44c8a36b7c31ee00b4271daed11dc2a4aa481140
+      localPath: ComfyUI-LTXVideo
+      name: ComfyUI-LTXVideo
+      repository: https://github.com/Lightricks/ComfyUI-LTXVideo
+      source: git
+    - gitRef: 4d3bed4b569205124a52444caf25de1719fae0de
+      localPath: ComfyUI-Manager
+      name: ComfyUI-Manager
+      repository: https://github.com/Comfy-Org/ComfyUI-Manager
+      source: git
+    - gitRef: 4d907bee61e92c2e65af3bd6383a4e4d356126d1
+      localPath: ComfyUI-VideoHelperSuite
+      name: ComfyUI-VideoHelperSuite
+      repository: https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite
+      source: git
+    - gitRef: 5443a2aa16cfbd98bb2f7dcc8bdcb70439e08529
+      localPath: ComfyUI_BiRefNet_ll
+      name: ComfyUI_BiRefNet_ll
+      repository: https://github.com/lldacing/ComfyUI_BiRefNet_ll
+      source: git
+    - gitRef: a587a4c1594524c1d2de5cd1a86cd868ff448e1c
+      localPath: comfyui_controlnet_aux
+      name: comfyui_controlnet_aux
+      repository: https://github.com/Fannovel16/comfyui_controlnet_aux
+      source: git
+    - blobId: 58387883-3371-43de-a6fd-6553f05d6752
+      localDigest: a6db3f12116c0db5c90b568a9ab4ba0a1381904d415526a4f9ef8efcfcbd4a15
+      localPath: shotgrammar
+      localSizeBytes: 124753
+      name: shotgrammar
+      source: local
+  pipDependencies: |+
+    # ShotGrammar runtime deps (the builder installs pack requirements.txt too; pinned here as well)
+    qrcode>=7.4
+    mutagen>=1.47
+    imageio-ffmpeg>=0.5
+    pyyaml>=6.0
+  environment:
+    arch: AMD64
+    os: Windows
+    pythonVersion: 3.14.2
+    torch: 2.10.0+cu130

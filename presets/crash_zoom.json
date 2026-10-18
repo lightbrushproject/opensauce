@@ -1,0 +1,63 @@
+{
+  "preset": "crash_zoom",
+  "display_name": "Crash Zoom",
+  "one_line": "A violent push from the wide frame onto the face, a hard stop, then stillness.",
+  "lane": "geometry-led",
+  "base_workflow": "workflows/_base_ltx25_i2v.api.json",
+  "workflow": "workflows/crash_zoom.api.json",
+  "custom_stage": "SGReprojectMove(move=crash_zoom) -> 8 LTXVAddGuide keyframes; post: SGSpeedRamp(impact)",
+  "defaults": {
+    "width": 704,
+    "height": 1280,
+    "frames": 97,
+    "fps": 24,
+    "intensity": 0.5,
+    "zoom_factor_note": "zoom = 1 + 4 * intensity; 0.5 -> 3.0x (LAW-2 needs >= 2.5x, so intensity >= 0.375)",
+    "target_bbox": [0.42, 0.40, 0.58, 0.50],
+    "ease": "impact",
+    "guide_keyframes": [0, 8, 16, 24, 32, 48, 72, 96],
+    "guide_first_strength": 1.0,
+    "guide_strength": 0.8,
+    "hole_mask_grow_px": 6,
+    "depth": "DepthAnythingV2Preprocessor vitl @ 768, resized to the frame size before SGReprojectMove",
+    "ramp": {"curve": "impact", "hit_at": 0.22, "blend": false},
+    "seed": 11
+  },
+  "prompt_module": {
+    "template": "A {subject} with {hair} under a {headwear}, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a {shirt}, standing in a {place} with floating golden sparks. He breathes slowly and stays still, golden sparks drift through the air, both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic, fine detail",
+    "defaults": {
+      "subject": "man",
+      "hair": "long dark wavy hair",
+      "headwear": "black baseball cap",
+      "shirt": "black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines",
+      "place": "red sandstone canyon"
+    },
+    "intensity_map": {
+      "0.4": "2.6x push: head and chest",
+      "0.5": "3.0x push: head and upper chest (default)",
+      "0.75": "4.0x push: face fills the frame; only for inputs where the face is at least ~100 px wide"
+    },
+    "negative": "pc game, console game, video game, cartoon, childish, ugly, blurry face, soft face, changing face, extra face, melting, warped text, misspelled text, dark eyes, glow fading, black holes, black borders, torn edges, smeared, duplicated limbs"
+  },
+  "camera": {
+    "move": "crash_zoom",
+    "ramp": "impact",
+    "note": "geometry comes from SGReprojectMove, never from the prompt: the prompt names only the subject and must not contain camera words (zoom, push, dolly, close-up, wide)"
+  },
+  "grade_chip": "none",
+  "seed_exposed": true,
+  "framing_rule": "target_bbox = the face/head box in normalised coords of the frame AFTER center-crop to the output aspect; keep it tight to the head so its median depth is the subject, not the background.",
+  "version": "v1",
+  "model": "LTX-2.5 distilled int8",
+  "input_requirements": [
+    "face clearly visible, at least ~60 px wide at the output resolution",
+    "head not touching the frame edge (the push centres it)",
+    "9:16 (704x1280) or 16:9 (1280x704)"
+  ],
+  "known_issues": [
+    "disocclusion holes at hair/arm edges survive into the hold as black dither (guides pin them; the attention mask does not clear sub-patch holes) -> needs hole fill inside SGReprojectMove",
+    "small subjects (golden 02) show an LTX double-exposure frame around f4 between keyframes 0 and 8",
+    "the hold after the hit is near-frozen; micro-motion is minimal",
+    "SGReprojectMove samples bbox depth on the un-resized depth map; the workflow resizes depth first as a workaround"
+  ]
+}

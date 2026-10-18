@@ -1,0 +1,120 @@
+{
+  "preset": "earth_zoom",
+  "display_name": "Pull Back",
+  "one_line": "The view pulls back from the hero to reveal the whole canyon around him; the reverse cut lands on his face.",
+  "status": "camera move: Pull Back (in the App Mode dropdown and the closing shot of the trailer); not a menu tile",
+  "lane": "geometry-led",
+  "base_workflow": "workflows/_base_ltx25_i2v.api.json",
+  "stage_workflow": "workflows/_stage_earth_zoom_outpaint.api.json",
+  "workflow": "workflows/earth_zoom.api.json",
+  "custom_stage": "Qwen-Image-Edit-2511 zoom-out still (padded canvas, free re-render) -> BiRefNet mattes of Sn and Sn+1 -> SGEarthZoomPath(inner=Sn, outer=Sn+1, inner_rect, subject masks: plates made to agree, hard shrinking mask) -> 8 LTXVAddGuide keys (f0 1.0, mid 0.8, f96 0.9); post: SGSpeedRamp(linear), SGRecipeEmbed",
+  "run": [
+    "python scripts/run_workflow.py workflows/_stage_earth_zoom_outpaint.api.json --image S0.png --set \"OS:edit_prompt.prompt=...\" --out tmp/obs/earth_zoom_ladder   (9:16; add --width 1280 --height 704 and pads 320/176 for 16:9)",
+    "measure inner_rect: where S0's subject sits in S1 (subject height ratio = zoom; anchor = eyes or body centre)",
+    "python scripts/run_workflow.py workflows/earth_zoom.api.json --image S0.png --end-image S1.png --seed 11 --set OS:path.inner_x0=.. (x0,y0,x1,y1) --prefix opensauce/<name>",
+    "python scripts/earth_zoom_assemble.py --clean <segment>_clean.mp4 [...] --recipe recipes/<id>.json --out outputs/earth_zoom/final/<name>   (forward + _reverse)"
+  ],
+  "run_steps": [
+    {
+      "name": "zoom_out",
+      "workflow": "workflows/_stage_earth_zoom_outpaint.api.json",
+      "images": {
+        "OS:image": "input"
+      },
+      "set": {
+        "OS:edit_prompt.prompt": "The flat grey bands around the photo are empty canvas. Paint over every grey area so the picture fills the whole frame edge to edge, a seamless wider view of the same scene from twice as far away. Above: open sky and distant red sandstone cliffs. Below and around: sandy canyon floor and rock. The man stays small in the middle, unchanged. Same warm soft daylight, same colors, photoreal. Any rock arch or overhang curves overhead and continues naturally out of frame in every direction: no horizontal lines, no flat bridge, no straight edges. No grey, no border, no frame, no text."
+      }
+    },
+    {
+      "name": "video",
+      "workflow": "workflows/earth_zoom.api.json",
+      "images": {
+        "OS:image": "input",
+        "OS:image_end": "zoom_out"
+      }
+    }
+  ],
+  "defaults": {
+    "width": 704,
+    "height": 1280,
+    "frames": 97,
+    "fps": 24,
+    "seed": 11,
+    "stage": {
+      "shrink": 0.5,
+      "pad_9x16": [
+        176,
+        320,
+        176,
+        320
+      ],
+      "pad_16x9": [
+        320,
+        176,
+        320,
+        176
+      ],
+      "pad_note": "left,top,right,bottom; grey canvas",
+      "edit_sampler": {
+        "steps": 30,
+        "cfg": 4.0,
+        "sampler": "euler",
+        "scheduler": "simple",
+        "denoise": 1.0,
+        "seed": 9
+      },
+      "edit_prompt_template": "The flat grey bands around the photo are empty canvas. Paint over every grey area so the picture fills the whole frame edge to edge, a seamless wider view of the same scene from twice as far away. {what is above / below / around}. The man stays small in the middle, unchanged. Same warm soft daylight, same colors, photoreal. No grey, no border, no frame, no text."
+    },
+    "path": {
+      "ease": "linear",
+      "feather": 3.0,
+      "feather_note": "px; hard mask edge, no alpha fades",
+      "fade_end": 0.3,
+      "subject_masks": "BiRefNet General on both plates (matte_inner / matte_outer); outer subject inpainted inside the footprint, inner subject pasted",
+      "zoom_note": "zoom per segment = 1 / (inner_x1 - inner_x0); LAW-2 wants >= 4x"
+    },
+    "guide_keyframes": [
+      0,
+      8,
+      16,
+      24,
+      32,
+      48,
+      72,
+      96
+    ],
+    "guide_first_strength": 1.0,
+    "guide_strength": 0.8,
+    "guide_last_strength": 0.9,
+    "ramp": {
+      "curve": "linear",
+      "blend": false
+    }
+  },
+  "prompt_module": {
+    "template": "{subject description}, standing in a {place}. The view pulls back steadily and smoothly in one continuous move, the framing expands to reveal {what appears}, so he becomes small in the middle of the {place_short}. Warm soft daylight, light haze, photoreal, cinematic, fine detail, no cuts.",
+    "negative": "pc game, console game, video game, cartoon, childish, ugly, blurry, oversaturated, extra face, melting, duplicated limbs, black frames, fade to black, cut, dissolve, crossfade, double exposure, split screen, picture in picture, text overlay"
+  },
+  "camera": {
+    "move": "pull_back",
+    "note": "Geometry comes from SGEarthZoomPath guides. Text-only I2V ('rises straight up and back') flew FORWARD through the canyon; first/last guides alone (no path) pushed in and whip-cut at f35."
+  },
+  "grade_chip": "none",
+  "seed_exposed": true,
+  "version": "v0",
+  "model": "LTX-2.5 distilled int8 + Qwen-Image-Edit-2511 Q4_K_M GGUF (stage)",
+  "input_requirements": [
+    "one subject roughly centred",
+    "9:16 (704x1280) or 16:9 (1280x704)",
+    "half-body inputs work: Qwen invents the legs/shoes in the zoom-out still (golden 03)"
+  ],
+  "known_issues": [
+    "Qwen-Image-Edit does NOT keep the pasted centre pixel-exact: latent noise mask (with or without DifferentialDiffusion, feather 96) gives a picture-in-picture portal; restoring the centre over a free re-render ghosts (Qwen moves/rescales the subject). Shipped: free re-render + measured inner_rect.",
+    "Feeding a Qwen output back into Qwen (S1 -> S2) failed 3/3: it zooms back in to full frame and posterises/over-saturates. Use the original photo (or an LTX frame) as the Qwen input.",
+    "Eye-level -> aerial and aerial -> orbit cannot be a geometric zoom (perspective changes): the path crossfade becomes a ~0.4-0.6 s dissolve (earth_zoom_g01 f100-110, f195-210).",
+    "The aerial plate S2 is an LTX frame (text-driven I2V), not a Qwen outpaint; it reads clay-like and pinker than S1.",
+    "Golden 03 pull-back is 3.5x (the design target is 4x per stage).",
+    "Pull Back starts on the hero over the zoom-out still's (Qwen's) world, upscaled, not the input photo's own background: a free re-render invents a new background, and any blend or wipe between the two backgrounds read as a ghost (alpha), a portal (hard mask) or a dissolve (sparse keys) in tests.",
+    "The inpainted outer subject can leave a faint shadow patch (g01 between the legs, f0-f27)."
+  ]
+}

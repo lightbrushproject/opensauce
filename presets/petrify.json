@@ -1,0 +1,99 @@
+{
+  "preset": "petrify",
+  "display_name": "Petrify",
+  "one_line": "Dust pours over the subject and he sets into a weathered grey stone statue; the world around him stays exactly as it was.",
+  "lane": "material-led",
+  "base_workflow": "workflows/_base_ltx25_i2v.api.json",
+  "stage_workflow": "workflows/_stage_petrify_qwen.api.json",
+  "workflow": "workflows/petrify.api.json",
+  "custom_stage": "Qwen-Image-Edit-2511 stone pass composited through a BiRefNet subject matte (stage workflow) -> LTXVAddGuide f0 = photo @1.0, f96 = stone still @0.9; post: SGSpeedRamp(linear)",
+  "run": [
+    "python scripts/run_workflow.py workflows/_stage_petrify_qwen.api.json --image IN.jpg [--width 1280 --height 704] --out tmp/obs/petrify  (writes petrify_stone_*.png)",
+    "python scripts/run_workflow.py workflows/petrify.api.json --image IN.jpg --end-image tmp/obs/petrify/petrify_stone_00001_.png --seed 11"
+  ],
+  "run_steps": [
+    {
+      "name": "stone",
+      "workflow": "workflows/_stage_petrify_qwen.api.json",
+      "images": {
+        "OS:image": "input"
+      }
+    },
+    {
+      "name": "video",
+      "workflow": "workflows/petrify.api.json",
+      "images": {
+        "OS:image": "input",
+        "OS:image_end": "stone"
+      }
+    }
+  ],
+  "defaults": {
+    "width": 704,
+    "height": 1280,
+    "frames": 97,
+    "fps": 24,
+    "intensity_note": "no geometry move: intensity is not used by this preset",
+    "stage": {
+      "matte": "BiRefNet General (MIT) @1024, GrowMask 12 px, blur radius 10 / sigma 5 feather",
+      "edit_model": "qwen-image-edit-2511-Q4_K_M.gguf via UnetLoaderGGUF, ModelSamplingAuraFlow 3.1, CFGNorm 1.0",
+      "edit_sampler": {
+        "steps": 30,
+        "cfg": 4.0,
+        "sampler": "euler",
+        "scheduler": "simple",
+        "denoise": 1.0,
+        "seed": 8
+      },
+      "edit_prompt": "Turn the man into a weathered grey stone statue: carved marble texture over his skin, hair, cap and clothes, same pose, same clothing folds carved in stone, same face, his glowing eyes become dim amber embers. Keep the background unchanged.",
+      "composite": "ImageCompositeMasked(destination=photo, source=edit, mask=feathered matte)"
+    },
+    "guide_first": {
+      "frame": 0,
+      "strength": 1.0,
+      "image": "input photo"
+    },
+    "guide_last": {
+      "frame": 96,
+      "strength": 0.9,
+      "image": "stone composite"
+    },
+    "ramp": {
+      "curve": "linear",
+      "blend": false
+    },
+    "seed": 11
+  },
+  "prompt_module": {
+    "template": "A {subject} with {hair} under a {headwear}, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a {shirt}, standing in a {place}. He holds still as grey stone spreads over him from his feet upward, turning his skin, hair, cap, shirt and jeans into weathered carved grey marble, until he is a motionless stone statue with the same face, his two eyes fading to dim amber embers. Fine grey dust falls from the stone and drifts down. The {place_short} behind him stays unchanged, framing never changes. Photoreal, cinematic, fine detail",
+    "defaults": {
+      "subject": "man",
+      "hair": "long dark wavy hair",
+      "headwear": "black baseball cap",
+      "shirt": "black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines",
+      "place": "red sandstone canyon",
+      "place_short": "canyon"
+    },
+    "negative": "pc game, console game, video game, cartoon, childish, ugly, blurry face, changing face, extra face, melting, smeared, duplicated limbs, black frames, fade to black, background turning to stone, camera movement, zoom"
+  },
+  "camera": {
+    "move": "none (locked)",
+    "ramp": "linear",
+    "note": "A push-in variant (SGReprojectMove push_in on the stone still as the f96 guide) was tested and NOT shipped: at 0.35 it scaled the subject ~1.9x and left splat residue; at 0.15 with end strength 0.7 it pushed cleanly on golden 01 but left brown flake residue on the fingertips of golden 03."
+  },
+  "grade_chip": "none",
+  "seed_exposed": true,
+  "version": "v1",
+  "model": "LTX-2.5 distilled int8 + Qwen-Image-Edit-2511 Q4_K_M GGUF (stage) + BiRefNet General (stage)",
+  "input_requirements": [
+    "one clearly separable subject (BiRefNet picks the salient subject)",
+    "9:16 (704x1280) or 16:9 (1280x704); run the stage at the same size as the video",
+    "glowing/emissive subjects: the glow halo outside the silhouette survives as a faint haze near the hands"
+  ],
+  "known_issues": [
+    "SGSpeedRamp slow_mo_settle (1-(1-t)^3) compresses the transformation into the first ~16 frames and holds a frozen statue for 2.6 s: use linear",
+    "mid-clip (about f30-f45) the dust shroud veils the face/hair outline; the eyes stay two lit points",
+    "the Qwen edit shifts thin parts (fingers) by a few px; the feathered matte softens the outer edge of the forearm on golden 01",
+    "QR decodes on the delivered MP4 but not after a CRF-32 720p-height re-encode of a 9:16 clip (396 px wide -> ~1.7 px per module); same for crash_zoom; fixed by module-based QR sizing"
+  ]
+}

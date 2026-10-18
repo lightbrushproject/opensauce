@@ -1,0 +1,46 @@
+{
+  "preset": "levitate",
+  "display_name": "Levitate",
+  "one_line": "The subject rises; hair and clothes know it.",
+  "lane": "motion-led",
+  "base_workflow": "workflows/_base_ltx25_i2v.api.json",
+  "custom_stage": null,
+  "defaults": {
+    "width": 704,
+    "height": 1280,
+    "frames": 97,
+    "fps": 24,
+    "img_strength": 0.7,
+    "intensity": 0.6
+  },
+  "prompt_module": {
+    "template": "Locked-off static shot, the framing never changes and the {subject} stays the same size in frame. The {subject} with glowing golden eyes and glowing circuit-lit forearms slowly lifts off the ground and floats straight upward, feet leaving the {ground}, {hair_or_hood} and loose clothing drifting upward as if weightless, eyes and forearms stay brightly lit the whole time, {particles}face and eyes stay sharp and unchanged, clothing print stays identical and only on the shirt, cinematic, photoreal, smooth motion",
+    "defaults": {
+      "subject": "person",
+      "ground": "ground",
+      "hair_or_hood": "hair",
+      "particles": ""
+    },
+    "intensity_map": {
+      "0.3": "barely lifts, toes still brushing the ground",
+      "0.6": "lifts a full body-height, slow and steady",
+      "0.9": "rises fast and high, clothing whipping upward, camera tilting hard"
+    },
+    "negative": "pc game, console game, video game, cartoon, childish, ugly, static subject, frozen, still image, camera zoom, dolly, push in, pull out, close-up, cropped head, subject leaving the frame, blurry face, changing face, melting, warped text, dark eyes, glow fading, tripod, camera equipment, pattern spreading to pants"
+  },
+  "camera": {
+    "move": "static",
+    "ramp": "slowmo_settle",
+    "note": "camera motion words make LTX-2.5 reframe and lose identity; keep static for Levitate"
+  },
+  "grade_chip": "warm_film",
+  "seed_exposed": true,
+  "framing_rule": "If the subject's bbox height exceeds 70% of the frame (tight crop), cap intensity at 0.4 so the rise stays inside the frame; the camera-tracking line does the rest.",
+  "version": "v4",
+  "model": "LTX-2.5 distilled int8",
+  "input_requirements": [
+    "full body visible, feet in frame",
+    "some ground below the feet",
+    "9:16 or 16:9; square only if full body fits"
+  ]
+}

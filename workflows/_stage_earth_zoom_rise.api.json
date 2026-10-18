@@ -1,0 +1,402 @@
+{
+ "1": {
+  "class_type": "UNETLoader",
+  "inputs": {
+   "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+   "weight_dtype": "default"
+  },
+  "_meta": {
+   "title": "UNETLoader"
+  }
+ },
+ "3": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+  },
+  "_meta": {
+   "title": "VAELoader"
+  }
+ },
+ "4": {
+  "class_type": "VAELoader",
+  "inputs": {
+   "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+  },
+  "_meta": {
+   "title": "VAELoader"
+  }
+ },
+ "5": {
+  "class_type": "CLIPLoader",
+  "inputs": {
+   "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+   "type": "ltxv",
+   "device": "default"
+  },
+  "_meta": {
+   "title": "CLIPLoader"
+  }
+ },
+ "6": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "clip": [
+    "5",
+    0
+   ],
+   "text": "High aerial view looking down on a vast maze of layered red sandstone mesas and winding canyons under a clear sky. The view dives straight down in one smooth continuous move toward a small arched opening in the red rock, the canyon walls rising around it, until the sandy canyon floor and the arch fill the frame. Warm soft daylight, photoreal, cinematic, fine natural detail, no cut."
+  },
+  "_meta": {
+   "title": "OS:prompt"
+  }
+ },
+ "7": {
+  "class_type": "CLIPTextEncode",
+  "inputs": {
+   "clip": [
+    "5",
+    0
+   ],
+   "text": "pc game, console game, video game, cartoon, childish, ugly, blurry, oversaturated, extra face, melting, duplicated limbs, black frames, fade to black, cut, dissolve, crossfade, double exposure, split screen, picture in picture, text overlay"
+  },
+  "_meta": {
+   "title": "OS:negative"
+  }
+ },
+ "8": {
+  "class_type": "LTXVConditioning",
+  "inputs": {
+   "positive": [
+    "6",
+    0
+   ],
+   "negative": [
+    "7",
+    0
+   ],
+   "frame_rate": 24.0
+  },
+  "_meta": {
+   "title": "OS:fps_cond"
+  }
+ },
+ "9": {
+  "class_type": "LoadImage",
+  "inputs": {
+   "image": "opensauce_test.png"
+  },
+  "_meta": {
+   "title": "OS:image"
+  }
+ },
+ "10": {
+  "class_type": "ResizeImageMaskNode",
+  "inputs": {
+   "input": [
+    "9",
+    0
+   ],
+   "resize_type": "scale dimensions",
+   "resize_type.width": 704,
+   "resize_type.height": 1280,
+   "resize_type.crop": "center",
+   "scale_method": "lanczos"
+  },
+  "_meta": {
+   "title": "OS:resize"
+  }
+ },
+ "15": {
+  "class_type": "LTXVEmptyLatentAudio",
+  "inputs": {
+   "frames_number": 97,
+   "frame_rate": 24,
+   "batch_size": 1,
+   "audio_vae": [
+    "4",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "OS:audio_latent"
+  }
+ },
+ "16": {
+  "class_type": "LTXVConcatAVLatent",
+  "inputs": {
+   "video_latent": [
+    "70",
+    2
+   ],
+   "audio_latent": [
+    "15",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "LTXVConcatAVLatent"
+  }
+ },
+ "17": {
+  "class_type": "RandomNoise",
+  "inputs": {
+   "noise_seed": 11
+  },
+  "_meta": {
+   "title": "OS:seed"
+  }
+ },
+ "18": {
+  "class_type": "KSamplerSelect",
+  "inputs": {
+   "sampler_name": "euler_ancestral"
+  },
+  "_meta": {
+   "title": "KSamplerSelect"
+  }
+ },
+ "19": {
+  "class_type": "ManualSigmas",
+  "inputs": {
+   "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+  },
+  "_meta": {
+   "title": "ManualSigmas"
+  }
+ },
+ "20": {
+  "class_type": "LTXVDualCFGGuider",
+  "inputs": {
+   "model": [
+    "1",
+    0
+   ],
+   "positive": [
+    "70",
+    0
+   ],
+   "negative": [
+    "70",
+    1
+   ],
+   "video_cfg": 1.0,
+   "audio_cfg": 1.0
+  },
+  "_meta": {
+   "title": "LTXVDualCFGGuider"
+  }
+ },
+ "21": {
+  "class_type": "SamplerCustomAdvanced",
+  "inputs": {
+   "noise": [
+    "17",
+    0
+   ],
+   "guider": [
+    "20",
+    0
+   ],
+   "sampler": [
+    "18",
+    0
+   ],
+   "sigmas": [
+    "19",
+    0
+   ],
+   "latent_image": [
+    "16",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "SamplerCustomAdvanced"
+  }
+ },
+ "22": {
+  "class_type": "LTXVSeparateAVLatent",
+  "inputs": {
+   "av_latent": [
+    "21",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "LTXVSeparateAVLatent"
+  }
+ },
+ "23": {
+  "class_type": "LTXVCropGuides",
+  "inputs": {
+   "positive": [
+    "70",
+    0
+   ],
+   "negative": [
+    "70",
+    1
+   ],
+   "latent": [
+    "22",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "LTXVCropGuides"
+  }
+ },
+ "34": {
+  "class_type": "VAEDecodeTiled",
+  "inputs": {
+   "samples": [
+    "23",
+    2
+   ],
+   "vae": [
+    "3",
+    0
+   ],
+   "tile_size": 512,
+   "overlap": 64,
+   "temporal_size": 64,
+   "temporal_overlap": 16
+  },
+  "_meta": {
+   "title": "VAEDecodeTiled"
+  }
+ },
+ "35": {
+  "class_type": "LTXVAudioVAEDecode",
+  "inputs": {
+   "samples": [
+    "22",
+    1
+   ],
+   "audio_vae": [
+    "4",
+    0
+   ]
+  },
+  "_meta": {
+   "title": "LTXVAudioVAEDecode"
+  }
+ },
+ "43": {
+  "class_type": "EmptyLTXVLatentVideo",
+  "inputs": {
+   "width": 704,
+   "height": 1280,
+   "length": 97,
+   "batch_size": 1
+  },
+  "_meta": {
+   "title": "OS:latent_full"
+  }
+ },
+ "50": {
+  "class_type": "SGSpeedRamp",
+  "inputs": {
+   "images": [
+    "34",
+    0
+   ],
+   "curve": "linear",
+   "hit_at": 0.6,
+   "blend": false
+  },
+  "_meta": {
+   "title": "OS:ramp"
+  }
+ },
+ "38": {
+  "class_type": "CreateVideo",
+  "_meta": {
+   "title": "OS:create"
+  },
+  "inputs": {
+   "images": [
+    "50",
+    0
+   ],
+   "fps": 24.0,
+   "audio": [
+    "35",
+    0
+   ]
+  }
+ },
+ "39": {
+  "class_type": "SaveVideo",
+  "_meta": {
+   "title": "OS:save"
+  },
+  "inputs": {
+   "video": [
+    "38",
+    0
+   ],
+   "filename_prefix": "opensauce/earth_zoom_rise",
+   "format": "mp4",
+   "format.codec": "h264"
+  }
+ },
+ "42": {
+  "class_type": "LTXVPreprocess",
+  "_meta": {
+   "title": "LTXVPreprocess"
+  },
+  "inputs": {
+   "image": [
+    "10",
+    0
+   ],
+   "img_compression": 18
+  }
+ },
+ "60": {
+  "class_type": "ImageFromBatch",
+  "_meta": {
+   "title": "key_end"
+  },
+  "inputs": {
+   "image": [
+    "42",
+    0
+   ],
+   "batch_index": 0,
+   "length": 1
+  }
+ },
+ "70": {
+  "class_type": "LTXVAddGuide",
+  "_meta": {
+   "title": "OS:guide_end"
+  },
+  "inputs": {
+   "positive": [
+    "8",
+    0
+   ],
+   "negative": [
+    "8",
+    1
+   ],
+   "vae": [
+    "3",
+    0
+   ],
+   "latent": [
+    "43",
+    0
+   ],
+   "image": [
+    "60",
+    0
+   ],
+   "frame_idx": 96,
+   "strength": 1.0
+  }
+ }
+}

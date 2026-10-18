@@ -1,0 +1,115 @@
+{
+  "preset": "disintegrate",
+  "display_name": "Disintegrate",
+  "one_line": "The subject crumbles into grey ash and glowing embers that blow away on the wind; the world around him stays exactly as it was.",
+  "lane": "material-led",
+  "base_workflow": "workflows/_base_ltx25_i2v.api.json",
+  "stage_workflow": "workflows/_stage_disintegrate_plate.api.json",
+  "workflow": "workflows/disintegrate.api.json",
+  "custom_stage": "Qwen-Image-Edit-2511 clean plate (latent noise mask on SGRemovalMask = BiRefNet matte grown 7% of the short side + floor patch under the feet, composited back through the feathered mask) -> SGDisintegrate guide frames + per-pixel key weights -> LTXVAddGuide f0 = photo @1.0 + keys f8/16/32/48/56/64/72/80/96 @1.0 with attention masks",
+  "run": [
+    "python scripts/run_workflow.py workflows/_stage_disintegrate_plate.api.json --image IN.jpg [--width 1088 --height 1920] --out tmp/obs/disintegrate  (writes disintegrate_plate_*.png)",
+    "python scripts/run_workflow.py workflows/disintegrate.api.json --image IN.jpg --end-image tmp/obs/disintegrate/disintegrate_plate_00001_.png --seed 11"
+  ],
+  "run_steps": [
+    {
+      "name": "plate",
+      "workflow": "workflows/_stage_disintegrate_plate.api.json",
+      "images": {
+        "OS:image": "input"
+      }
+    },
+    {
+      "name": "video",
+      "workflow": "workflows/disintegrate.api.json",
+      "images": {
+        "OS:image": "input",
+        "OS:image_end": "plate"
+      }
+    }
+  ],
+  "defaults": {
+    "width": 704,
+    "height": 1280,
+    "frames": 97,
+    "fps": 24,
+    "intensity_note": "no camera move: intensity is not used by this preset",
+    "stage": {
+      "matte": "BiRefNet General @1024 -> SGRemovalMask grow_frac 0.07, below_frac 0.12 -> blur radius 16 / sigma 8 feather",
+      "edit_model": "qwen-image-edit-2511-Q4_K_M.gguf via UnetLoaderGGUF, ModelSamplingAuraFlow 3.1, CFGNorm 1.0",
+      "edit_sampler": {
+        "steps": 30,
+        "cfg": 4.0,
+        "sampler": "euler",
+        "scheduler": "simple",
+        "denoise": 1.0,
+        "seed": 8,
+        "latent": "SetLatentNoiseMask(photo latent, feathered matte)"
+      },
+      "edit_prompt": "Remove the man completely, together with the glow around his hands and arms. Show the empty ground and background where he was standing, nothing of him left. Keep everything else exactly unchanged.",
+      "composite": "ImageCompositeMasked(destination=photo, source=edit, mask=feathered matte)",
+      "size_note": "run the plate at the final size (1088x1920 / 1920x1088); the video graph resizes it (OS:resize_end) for drafts",
+      "edit_prompt_shadow_variant": "for subjects with a hard cast shadow or light on the ground: '...together with his shadow, the glow around his hands and arms and the light his shoes cast on the ground...' (goldens 02/03 via stage_set); on golden 01 (no hard shadow) it invented a shadow"
+    },
+    "guide": {
+      "node": "SGDisintegrate (OS:disintegrate): start 0.10, end 0.85, wind (-1.0, -0.3), density 0.22, seed 0, body_base 0.4, pin 0.85, wake 0.4; matte = BiRefNet + GrowMask 8",
+      "guide_first": {
+        "frame": 0,
+        "strength": 1.0,
+        "image": "input photo"
+      },
+      "keys": {
+        "frames": [
+          8,
+          16,
+          32,
+          48,
+          56,
+          64,
+          72,
+          80,
+          96
+        ],
+        "strength": 1.0,
+        "attention_mask": "SGDisintegrate weights: live body body_base (+0.12 after f48, + up to 0.2 for frame-filling subjects), already-gone body and world 0.85 (plate pinned), flake wake 0.4"
+      }
+    },
+    "ramp": {
+      "curve": "linear",
+      "blend": false
+    },
+    "seed": 11
+  },
+  "prompt_module": {
+    "template": "A {subject} with {hair} under a {headwear}, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a {shirt}, standing {place}. He holds still, his arms staying exactly where they are, as he disintegrates: his body dries into cracked grey ash from his hands and shoulders inward, the ash breaks into flakes and glowing orange embers, and a steady wind carries the flakes away to the left in a streaming cloud. His fingers, arms and legs crumble away first and his body loses volume from the edges inward, ragged holes opening through it, until only his head is left, his two eyes still glowing until they go out and the last ash blows away. The {place_short} behind him stays unchanged, framing never changes. Photoreal, cinematic, fine detail",
+    "defaults": {
+      "subject": "man",
+      "hair": "long dark wavy hair",
+      "headwear": "black baseball cap",
+      "shirt": "black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines",
+      "place": "in a red sandstone canyon",
+      "place_short": "canyon"
+    },
+    "negative": "pc game, console game, video game, cartoon, childish, ugly, blurry face, changing face, extra face, extra arms, duplicated limbs, smeared, transparent body, translucent, ghost, double exposure, black frames, fade to black, camera movement, zoom, arms folding, arms moving"
+  },
+  "camera": {
+    "move": "none (locked)",
+    "ramp": "linear"
+  },
+  "grade_chip": "none",
+  "seed_exposed": true,
+  "version": "v1",
+  "model": "LTX-2.5 distilled int8 + Qwen-Image-Edit-2511 Q4_K_M GGUF (plate stage) + BiRefNet General (stage and video graph) + SGDisintegrate (ShotGrammar)",
+  "input_requirements": [
+    "one clearly separable subject (BiRefNet picks the salient subject)",
+    "9:16 (704x1280 draft / 1088x1920 final) or 16:9 (1280x704 / 1920x1088)",
+    "the plate is the world the clip ends on: anything the matte misses (cast shadows, glow halos) stays behind"
+  ],
+  "known_issues": [
+    "the subject's print can stay bright on a charred chest for ~1 s before it chars over (g01 f38-f46)",
+    "late bust/head chunks can read as flat cut-out silhouettes (g02 f56, g03 f58-f77)",
+    "plate prompt: the shadow-removal wording invented a shadow on a shadowless input; use it only per input (goldens stage_set)",
+    "a faint pale rim can show round the cap where the grown removal mask meets the hair (g02 f26-f32)",
+    "round 1 (sparse keys @0.5, no attention masks): LTX rendered the crumbling zone as a translucent grain swarm/haze on 2/3 goldens; the attention-masked plate pin is what fixed it"
+  ]
+}

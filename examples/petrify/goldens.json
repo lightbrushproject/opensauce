@@ -1,0 +1,88 @@
+{
+  "preset": "petrify",
+  "model": "LTX-2.5 distilled int8 (workflows/petrify.api.json) + stage workflows/_stage_petrify_qwen.api.json",
+  "fps": 24,
+  "frames": 97,
+  "guide_last_strength": 0.9,
+  "stage_seed": 8,
+  "prompt_fill": "presets/petrify.json prompt_module.defaults",
+  "goldens": [
+    {
+      "input": "input_01.jpg",
+      "stone": "stone_01.png",
+      "seed": 11,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": true,
+      "render": "outputs/petrify/final/petrify_g01.mp4 (run petrify_g01_r2)",
+      "measured": {
+        "stage_wall_s": 99.1,
+        "video_wall_s": 45.0,
+        "min_frame_mean": 100.9,
+        "statue_complete_by": "f64",
+        "qr_decodes": true
+      },
+      "note": "greying starts at the shoes by f16, dust shroud f32, stone emerges f48, full carved statue f64-f96; face layout unchanged, eyes two amber points throughout, canyon and sparks untouched",
+      "expected": {
+        "file": "expected/input_01_seed11_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "wall_s": 244.2,
+        "recipe": "f71087e0a8",
+        "sha256": "99844c79fd7359f594a58a9afe9700169a750628dc3ad774f783e3872fb3a661",
+        "pass": true,
+        "observation": "Qwen stone stage re-run at 1088x1920 (153 s). Grey starts by f24 with dust veiling hair/face, stone by f48 (earlier than 720p's f64), finished carved statue f72-f96 with carved shirt text and amber eyes; canyon and sparks untouched",
+        "strip": "tmp/obs/golden_final/petrify_expected_input_01_seed11_final/strip.png"
+      }
+    },
+    {
+      "input": "input_02.jpg",
+      "seed": 22,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": null,
+      "note": "new 1088x1920 Qwen-Image-Edit-2511 avatar still (examples/_subjects/goldens-source.json: avatar_rooftop.jpg); not rendered yet (1080p golden pass pending)"
+    },
+    {
+      "input": "input_03.jpg",
+      "stone": "stone_03.png",
+      "seed": 33,
+      "size": [
+        1280,
+        704
+      ],
+      "pass": true,
+      "render": "outputs/petrify/final/petrify_g03.mp4 (run petrify_g03_r1)",
+      "measured": {
+        "stage_wall_s": 87.1,
+        "video_wall_s": 27.0,
+        "min_frame_mean": 70.3,
+        "statue_complete_by": "f64",
+        "qr_decodes": true
+      },
+      "note": "marble statue with carved legible shirt text; dust veils the face around f40 (eyes stay lit); faint orange haze near hands inherited from the original glow",
+      "expected": {
+        "file": "expected/input_03_seed33_final.mp4",
+        "size": [
+          1920,
+          1088
+        ],
+        "wall_s": 244.0,
+        "recipe": "76cebf4850",
+        "sha256": "b1319b134e906e50135e99ebe2f48533d5de2882abb511295e9504f24a13e7cc",
+        "pass": true,
+        "observation": "Qwen stone stage re-run at 1920x1088 (153 s). Dust shroud veils the whole figure at f48, marble statue with carved text and mushrooms f72-f96, eyes amber points; background untouched; same arc as 720p",
+        "strip": "tmp/obs/golden_final/petrify_expected_input_03_seed33_final/strip.png"
+      }
+    }
+  ],
+  "verdict": "2/2 rendered goldens pass (input_02 added 2026-10-17 (avatar_rooftop.jpg), unrendered)",
+  "source": "examples/_subjects/goldens-source.json",
+  "expected_note": "1080p finals from python scripts/render_goldens.py --size final; hashes in examples/RENDER-LOG.md"
+}

@@ -1,0 +1,86 @@
+{
+  "preset": "vertigo",
+  "model": "LTX-2.5 distilled int8 (workflows/vertigo.api.json)",
+  "fps": 24,
+  "frames": 97,
+  "intensity": 0.9,
+  "goldens": [
+    {
+      "input": "input_01.jpg",
+      "seed": 11,
+      "size": [
+        704,
+        1280
+      ],
+      "subject_bbox": [
+        0.36,
+        0.33,
+        0.64,
+        0.95
+      ],
+      "pass": true,
+      "render": "outputs/vertigo_g01_v3_00001_.mp4",
+      "note": "subject locked, arch and back wall close in; fingertip specks",
+      "expected": {
+        "file": "expected/input_01_seed11_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "wall_s": 198.9,
+        "recipe": "a28f5f1989",
+        "sha256": "1b68b172a67ded8abdad6fd193bc3a39107812ff9da0efd2aa22230f81d9cbbc",
+        "pass": true,
+        "observation": "strip read side by side with the 720p v3 render: near-identical; subject locked, arch and strata close in; fingertip specks from f48 as at 720p",
+        "strip": "tmp/obs/golden_final/vertigo_expected_input_01_seed11/strip.png"
+      }
+    },
+    {
+      "input": "input_02.jpg",
+      "seed": 22,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": null,
+      "note": "new 1088x1920 Qwen-Image-Edit-2511 avatar still (examples/_subjects/goldens-source.json: avatar_rooftop.jpg); not rendered yet (1080p golden pass pending); subject_bbox measured on the still (cap to soles, shirt width)",
+      "subject_bbox": [
+        0.25,
+        0.115,
+        0.78,
+        0.91
+      ]
+    },
+    {
+      "input": "input_03.jpg",
+      "seed": 33,
+      "size": [
+        1280,
+        704
+      ],
+      "subject_bbox": [
+        0.4,
+        0.04,
+        0.62,
+        0.98
+      ],
+      "pass": true,
+      "render": "outputs/vertigo_g03_v3_00001_.mp4",
+      "note": "strong wall rush, face/text hold; glowing hands become light trails | approved: the light trails are kept as a stylised feature -> PASS",
+      "expected": {
+        "file": "expected/input_03_seed33_final.mp4",
+        "size": [
+          1920,
+          1088
+        ],
+        "wall_s": 193.0,
+        "recipe": "56b0a82a13",
+        "sha256": "30d945730eb8422e3c1bedaeaf9c8ddf5dbf7d04136b26efd310c6d30223a8c8",
+        "pass": true,
+        "observation": "subject locked, walls close in, face/text hold; the glowing-hand light trails are BIGGER than at 720p (loops of light around both forearms f48-f96); the reviewer approved trails at 720p, re-check at 1080p",
+        "strip": "tmp/obs/golden_final/vertigo_expected_input_03_seed33/strip.png"
+      }
+    }
+  ],
+  "expected_note": "1080p finals from python scripts/render_goldens.py --size final; hashes in examples/RENDER-LOG.md"
+}

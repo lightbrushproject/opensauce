@@ -1,0 +1,90 @@
+{
+  "source": "Lightbrush-owned AI avatar stills, 2026-10-16 (an AI avatar, not a photograph). License: Lightbrush-owned.",
+  "caveats": [
+    "Shirt text (DEITCH BEATS) used with the artist's permission."
+  ],
+  "files": [
+    {
+      "file": "moe_avatar_canyon_01.jpg",
+      "size": [
+        1342,
+        2000
+      ],
+      "aspect": 0.671
+    },
+    {
+      "file": "moe_avatar_canyon_02.jpg",
+      "size": [
+        1116,
+        2000
+      ],
+      "aspect": 0.558
+    },
+    {
+      "file": "moe_avatar_canyon_03_wide.jpg",
+      "size": [
+        1440,
+        816
+      ],
+      "aspect": 1.765
+    },
+    {
+      "file": "moe_avatar_canyon_04_square.webp",
+      "size": [
+        764,
+        766
+      ],
+      "aspect": 0.997
+    },
+    {
+      "file": "avatar_city.jpg",
+      "size": [
+        1088,
+        1920
+      ],
+      "aspect": 0.567,
+      "model": "Qwen-Image-Edit-2511 Q4_K_M GGUF (qwen-image-edit-2511-Q4_K_M.gguf) + qwen_2.5_vl_7b_fp8_scaled + qwen_image_vae; graph = workflows/_stage_petrify_qwen.api.json loader/encoder/sampler (shift 3.1, CFGNorm 1, index_timestep_zero, euler/simple, 30 steps, cfg 4), no matte/composite",
+      "seed": 303,
+      "prompt": "Replace the canyon background with a night city street: wet black asphalt with reflections of his glow and the lights, out-of-focus neon signage in cyan and magenta far behind him, heavily blurred into plain glowing bars and soft bokeh discs with no letters, no symbols and no mushrooms on them, light rain haze. His glowing eyes and forearms read strongly against the dark street. Keep the man from Picture 1: same man, same face as the close-up in Picture 2, same black cap, same shoulder-length dark wavy hair, same glowing gold eyes, same glowing gold circuit-lit forearms and hands, same oversized black t-shirt with the same cream-white print DEITCH BEATS DON'T QUIT and the same two red mushrooms and gold circuit lines as in Picture 2, same dark jeans, same sneakers exactly as in Picture 3: grey high-tops with the same strap lettering and cyan sole lights. Same glowing eyes and forearms. Full body visible from cap to sneakers, feet on the ground with ground visible below the feet, standing centered facing the camera, arms relaxed and slightly open at his sides. Photorealistic photograph, realistic lighting on him from the new scene. No added text, no signs with words, no logos.",
+      "negative": "",
+      "source_still": "moe_avatar_canyon_01.jpg",
+      "references": "Picture 1 = canyon_01 crop x221-1121 y560-2000 with the bottom 160 px padded from blurred ground, resized to 1088x1920; Picture 2 = canyon_01 face+shirt crop (0.36,0.36)-(0.64,0.66); Picture 3 = canyon_01 sneaker crop (0.33,0.85)-(0.67,0.995)",
+      "used_as": "crash_zoom/input_02.jpg",
+      "license": "Derived from a Lightbrush-owned AI avatar still (no real photo) with Qwen-Image-Edit-2511 (Apache-2.0 weights); output Lightbrush-owned."
+    },
+    {
+      "file": "avatar_rooftop.jpg",
+      "size": [
+        1088,
+        1920
+      ],
+      "aspect": 0.567,
+      "model": "Qwen-Image-Edit-2511 Q4_K_M GGUF (qwen-image-edit-2511-Q4_K_M.gguf) + qwen_2.5_vl_7b_fp8_scaled + qwen_image_vae; graph = workflows/_stage_petrify_qwen.api.json loader/encoder/sampler (shift 3.1, CFGNorm 1, index_timestep_zero, euler/simple, 30 steps, cfg 4), no matte/composite",
+      "seed": 303,
+      "prompt": "Replace the canyon background with a city rooftop at dusk: concrete rooftop floor, a low parapet, a city skyline far behind him as soft bokeh lights, warm orange-pink sky near the horizon fading to cool blue shadows on the rooftop. Keep the man from Picture 1: same man, same face as the close-up in Picture 2, same black cap, same shoulder-length dark wavy hair, same glowing gold eyes, same glowing gold circuit-lit forearms and hands, same oversized black t-shirt with the same cream-white print DEITCH BEATS DON'T QUIT and the same two red mushrooms and gold circuit lines as in Picture 2, same dark jeans, same sneakers exactly as in Picture 3: grey high-tops with the same strap lettering and cyan sole lights. Same glowing eyes and forearms. Full body visible from cap to sneakers, feet on the ground with ground visible below the feet, standing centered facing the camera, arms relaxed and slightly open at his sides. Photorealistic photograph, realistic lighting on him from the new scene. No added text, no signs with words, no logos.",
+      "negative": "",
+      "source_still": "moe_avatar_canyon_01.jpg",
+      "references": "Picture 1 = canyon_01 crop x221-1121 y560-2000 with the bottom 160 px padded from blurred ground, resized to 1088x1920; Picture 2 = canyon_01 face+shirt crop (0.36,0.36)-(0.64,0.66); Picture 3 = canyon_01 sneaker crop (0.33,0.85)-(0.67,0.995)",
+      "used_as": "vertigo/input_02.jpg, petrify/input_02.jpg",
+      "license": "Derived from a Lightbrush-owned AI avatar still (no real photo) with Qwen-Image-Edit-2511 (Apache-2.0 weights); output Lightbrush-owned."
+    },
+    {
+      "file": "avatar_highway.jpg",
+      "size": [
+        1088,
+        1920
+      ],
+      "aspect": 0.567,
+      "model": "Qwen-Image-Edit-2511 Q4_K_M GGUF (qwen-image-edit-2511-Q4_K_M.gguf) + qwen_2.5_vl_7b_fp8_scaled + qwen_image_vae; graph = workflows/_stage_petrify_qwen.api.json loader/encoder/sampler (shift 3.1, CFGNorm 1, index_timestep_zero, euler/simple, 30 steps, cfg 4), no matte/composite",
+      "seed": 303,
+      "prompt": "Replace the canyon background with an empty straight desert highway at golden hour: he stands on the asphalt road with a faded center line, flat desert scrubland and distant low mountains, a huge open sky, low warm sun from the side casting his long shadow across the road. Keep the man from Picture 1: same man, same face as the close-up in Picture 2, same black cap, same shoulder-length dark wavy hair, same glowing gold eyes, same glowing gold circuit-lit forearms and hands, same oversized black t-shirt with the same cream-white print DEITCH BEATS DON'T QUIT and the same two red mushrooms and gold circuit lines as in Picture 2, same dark jeans, same sneakers exactly as in Picture 3: grey high-tops with the same strap lettering and cyan sole lights. Same glowing eyes and forearms. Full body visible from cap to sneakers, feet on the ground with ground visible below the feet, standing centered facing the camera, arms relaxed and slightly open at his sides. Photorealistic photograph, realistic lighting on him from the new scene. No added text, no signs with words, no logos.",
+      "negative": "",
+      "source_still": "moe_avatar_canyon_01.jpg",
+      "references": "Picture 1 = canyon_01 crop x221-1121 y560-2000 with the bottom 160 px padded from blurred ground, resized to 1088x1920; Picture 2 = canyon_01 face+shirt crop (0.36,0.36)-(0.64,0.66); Picture 3 = canyon_01 sneaker crop (0.33,0.85)-(0.67,0.995)",
+      "used_as": "levitate/input_03.jpg, earth_zoom/input_02.jpg",
+      "license": "Derived from a Lightbrush-owned AI avatar still (no real photo) with Qwen-Image-Edit-2511 (Apache-2.0 weights); output Lightbrush-owned."
+    }
+  ],
+  "no_real_photos": true,
+  "shoe_cleanup": "2026-10-17: footwear brand marks removed from the stills with Qwen-Image-Edit-2511 (feet region only, feathered composite over the untouched original; scripts/clean_shoes.py). The wide still shows no footwear and is unchanged."
+}

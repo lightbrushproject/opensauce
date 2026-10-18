@@ -1,0 +1,164 @@
+{
+  "preset": "disintegrate",
+  "model": "LTX-2.5 distilled int8 (workflows/disintegrate.api.json) + plate stage workflows/_stage_disintegrate_plate.api.json (SGRemovalMask) + SGDisintegrate guide keys with per-pixel attention masks",
+  "fps": 24,
+  "frames": 97,
+  "guide_keys": [
+    8,
+    16,
+    32,
+    48,
+    56,
+    64,
+    72,
+    80,
+    96
+  ],
+  "guide_key_strength": "1.0 x attention mask: live body 0.4 (+0.12 after f48, +up to 0.2 by subject area), gone body and world 0.85, flake wake 0.4",
+  "stage_seed": 8,
+  "prompt_fill": "presets/disintegrate.json prompt_module.defaults (+ per-golden prompt_fill)",
+  "goldens": [
+    {
+      "input": "input_01.jpg",
+      "plate": "plate_01.png",
+      "seed": 11,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": true,
+      "draft": {
+        "render": "tmp/obs/disintegrate/vid/dis_D5_00001_.mp4 (run D5)",
+        "strip": "tmp/obs/disintegrate/D5/strip.png",
+        "video_wall_s": 63.3,
+        "note": "arms and legs char to grey ash f19-f26, legs pour away as an ash stream f38, torso a solid charred bust f50, head last with lit eyes f62, gone by f90; no translucent frame"
+      },
+      "round2_expected": {
+        "file": "expected/input_01_seed11_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "wall_s": 161.2,
+        "recipe": "fef9aa4e64",
+        "sha256": "5f9bb6d1c00e8d1e131ed12e48b21ba8cd92298d881e307beb46b8741814aa87",
+        "pass": true,
+        "strip": "tmp/obs/disintegrate/r2final_input_01_seed11_final/strip.png",
+        "observation": "PASS. Re-rendered last with the round-2 settings. f13-f26 arms and legs char to charcoal in place; f32 legs crumble away as a stream; f38-f46 the body is solid charcoal flecked with embers while the shirt print stays bright on the chest (decal-ish, but on an opaque body); f51-f70 a dark bust, then the head crumbles, eyes lit until ~f70; f83-f96 empty canyon, no shadow or glow left. No translucent frame (close crops f26-f62)."
+      },
+      "round1_expected": {
+        "wall_s": 150.7,
+        "recipe": "7e3004e564",
+        "sha256": "773efa3a6511de2a439e978f5e7f4825d9646a91399eac70990db1c1636ca25c",
+        "file": "expected/input_01_seed11_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "stage_wall_s": "cached (plate 1088x1920, 153 s Qwen)",
+        "pass": true,
+        "observation": "f13-f26 the body chars from the hands and legs inward into dark ash flecked with embers, the shirt print ashes over in place (f32); f40 a solid charcoal figure with embers, pose and face unchanged; f45-f52 legs and lower torso break into a stream of grains blown left while the bust holds; f58-f77 the head crumbles last, eyes lit until ~f72; f83-f96 empty canyon, embers drifting, world untouched. Weak spot: f44-f50 the lower torso is a loose grain cloud and the canyon shows between the grains (reads as grains, not as a ghost layer).",
+        "strip": "tmp/obs/disintegrate/final_input_01_seed11_final/strip.png"
+      }
+    },
+    {
+      "input": "input_02.jpg",
+      "plate": "plate_02.png",
+      "seed": 22,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": true,
+      "prompt_fill": {
+        "place": "on a concrete rooftop at dusk above a city skyline",
+        "place_short": "rooftop and skyline"
+      },
+      "draft": {
+        "render": "tmp/obs/disintegrate/vid/dis_g02_d2_00001_.mp4",
+        "strip": "tmp/obs/disintegrate/g02_d2/strip.png",
+        "video_wall_s": 66.3,
+        "note": "704 draft mostly opaque charcoal; legs become a particle stream f36; LTX folds the outstretched arms in to the belly f24"
+      },
+      "stage_set": {
+        "OS:edit_prompt.prompt": "Remove the man completely, together with his shadow, the glow around his hands and arms and the light his shoes cast on the ground. Show the empty ground and background where he was standing, nothing of him left. Keep everything else exactly unchanged."
+      },
+      "round2_expected": {
+        "file": "expected/input_02_seed22_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "wall_s": 167.6,
+        "recipe": "e46e04406f",
+        "sha256": "17fe6d80f05553cc31ee44ddd80e46a8438d36a3889cd7adf4210831cd0a54ea",
+        "pass": true,
+        "strip": "tmp/obs/disintegrate/r2final_input_02_seed22_final/strip.png",
+        "observation": "PASS. f13-f19 legs and arms char to charcoal with thin ember cracks, arms stay out (no fold); f26-f38 feet and legs break off and stream away left; f45-f56 an opaque charred bust, slogan charred over; f64-f77 the head crumbles into a stream; f83-f96 rooftop clean: sole glow and leg shadows gone (new plate). No translucent frame (close crops f26-f66). Nits: f26-f32 a faint pale rim around the cap; the bust at f56 reads a little like a flat cut-out silhouette."
+      },
+      "round1_expected": {
+        "wall_s": 142.2,
+        "recipe": "b55c03841b",
+        "sha256": "448a7eae08c94c5b41b762015006f37f1649fbd82b3b67ae089098c22cee9db4",
+        "file": "expected/input_02_seed22_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "pass": false,
+        "observation": "FAIL. f26-f40 the jeans turn into a see-through particle swarm (the parapet line shows through the legs); f48-f66 the torso and head are a translucent grain sculpture with the skyline visible through them. LTX folds the outstretched arms in to the belly (f26). The plate keeps the cyan sole glow and the two leg shadows on the roof after he is gone (f83-f96).",
+        "strip": "tmp/obs/disintegrate/final_input_02_seed22_final/strip.png"
+      },
+      "round2_draft": "tmp/obs/disintegrate/r2d_g02/strip.png (704: opaque throughout)"
+    },
+    {
+      "input": "input_03.jpg",
+      "plate": "plate_03.png",
+      "seed": 33,
+      "size": [
+        1280,
+        704
+      ],
+      "pass": true,
+      "draft": {
+        "render": "tmp/obs/disintegrate/vid/dis_g03_d1_00001_.mp4 (pre-fix guide: flake count not frame-relative)",
+        "strip": "tmp/obs/disintegrate/g03_d1/strip.png",
+        "video_wall_s": 57.1,
+        "note": "FAIL: orange flake snow over the whole frame, hands cross mid-clip, head becomes a hollow glowing ring"
+      },
+      "stage_set": {
+        "OS:edit_prompt.prompt": "Remove the man completely, together with his shadow, the glow around his hands and arms and the light his shoes cast on the ground. Show the empty ground and background where he was standing, nothing of him left. Keep everything else exactly unchanged."
+      },
+      "round2_expected": {
+        "file": "expected/input_03_seed33_final.mp4",
+        "size": [
+          1920,
+          1088
+        ],
+        "wall_s": 169.1,
+        "recipe": "e5c7fc3cf6",
+        "sha256": "9ec53b92c1249a3eca657d6ea0d322683b6b46d4ec5b4f0bfa1abc46f1eba295",
+        "pass": true,
+        "strip": "tmp/obs/disintegrate/r2final_input_03_seed33_final/strip.png",
+        "observation": "PASS. f13 the arms (translucent glowing in the input itself) char; f19-f26 arms charcoal and blowing off right; f32-f36 the slogan is dimmed into the charcoal crust of an opaque torso (not floating in haze); f44-f58 an opaque charcoal torso and head break into chunks; f64-f83 the last chunks blow off; f90-f96 clean canyon, no glow streaks (new plate). No translucent frame (close crops f13-f52). Nits: f44 a pale ash cloud left of the body; f58-f77 the remaining chunks are blob-shaped and slightly cut-out."
+      },
+      "round1_expected": {
+        "wall_s": 141.9,
+        "recipe": "86ccd42b97",
+        "sha256": "acb4d56614c1c54c118882d2b2641122f436fc721270ebdab7521c4fb82269c4",
+        "file": "expected/input_03_seed33_final.mp4",
+        "size": [
+          1920,
+          1088
+        ],
+        "pass": false,
+        "observation": "FAIL. Arms char and blow off cleanly f13-f26, but f38-f58 the torso dissolves into a translucent grey haze over the canyon with the words BEATS/DON'T/QUIT floating in it (f45, f51); head a soft haze by f58. The plate keeps faint orange glow streaks where the arms' halo was.",
+        "strip": "tmp/obs/disintegrate/final_input_03_seed33_final/strip.png"
+      },
+      "round2_draft": "tmp/obs/disintegrate/r2d_g03/strip.png (1280x704: opaque throughout)"
+    }
+  ],
+  "verdict": "3/3 pass at locked settings (round 2, 2026-10-17): no frame with a translucent body in any golden at 1080; round-1 failures of g02/g03 kept under round1_expected",
+  "source": "examples/_subjects/goldens-source.json",
+  "expected_note": "1080p finals from python scripts/render_goldens.py --preset disintegrate --size final (plates cached by content hash, STAGE_SALT in render_goldens.py); hashes in examples/RENDER-LOG.md"
+}

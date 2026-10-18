@@ -1,0 +1,145 @@
+{
+  "preset": "earth_zoom",
+  "model": "LTX-2.5 distilled int8 (workflows/earth_zoom.api.json) + stage workflows/_stage_earth_zoom_outpaint.api.json",
+  "fps": 24,
+  "frames_per_segment": 97,
+  "stage_seed": 9,
+  "source": "examples/_subjects/goldens-source.json (Lightbrush AI avatar stills, Lightbrush-owned)",
+  "goldens": [
+    {
+      "input": "input_01.jpg",
+      "seed": 11,
+      "size": [
+        704,
+        1280
+      ],
+      "ladder": {
+        "S0": "ladder_01_S0.png (input, center-crop)",
+        "S1": "ladder_01_S1.png (Qwen, padded 0.5x canvas, free re-render; ~4.0x)",
+        "S2": "ladder_01_S2.png (LTX I2V last frame, text-driven rise; NOT Qwen)",
+        "S3": "ladder_01_S3.png (Qwen, original photo at 1/8 on grey canvas, orbit prompt)"
+      },
+      "inner_rects": {
+        "S0->S1": [
+          0.372,
+          0.512,
+          0.622,
+          0.762
+        ],
+        "S1->S2": [
+          0.375,
+          0.375,
+          0.625,
+          0.625
+        ],
+        "S2->S3": [
+          0.375,
+          0.375,
+          0.625,
+          0.625
+        ]
+      },
+      "fade_end": {
+        "S0->S1": 0.3,
+        "S1->S2": 0.2,
+        "S2->S3": 0.35
+      },
+      "pull_back": {
+        "pass": true,
+        "render": "outputs/earth_zoom/final/pull_back_g01.mp4 (+_reverse; run ez_g01_A_r8, recipe 3c0b35b315)",
+        "scale": 4.0,
+        "measured": {
+          "min_frame_mean": 97.6,
+          "max_interframe_diff": 8.93,
+          "median_interframe_diff": 6.7,
+          "qr_decodes_crf32_720": true
+        },
+        "note": "subject plates (BiRefNet mattes; S1's own subject inpainted, S0 subject pasted) + hard shrinking mask: no translucent double image or portal at any frame; eyes/glow/shirt text hold; background from f0 is S1's world (soft), not the input photo's arch; faint inpaint shadow between the legs f0-f27",
+        "expected": {
+          "file": "expected/input_01_seed11_final.mp4",
+          "size": [
+            1088,
+            1920
+          ],
+          "wall_s": 141.9,
+          "recipe": "4c3da20adb",
+          "sha256": "e764796e47e52cbe13057cb943a21f079851938f40fa2ed6adc2c56c17539923",
+          "pass": true,
+          "observation": "shipped S1 plate (704x1280) upscaled, recipe 3c0b35b315 graph; strip read side by side with the 720p final: near-identical 4x pull-back to the arch, no ghost or portal; background is soft and hazy from f0 (upscaled Qwen plate), feet hover faintly at f24",
+          "strip": "tmp/obs/golden_final/earth_zoom_expected_input_01_seed11_final/strip.png",
+          "reverse": "expected/input_01_seed11_final_reverse.mp4"
+        }
+      },
+      "earth_zoom_full": {
+        "pass": false,
+        "render": "outputs/earth_zoom/final/earth_zoom_g01.mp4 (+_reverse), 289 frames, ~64x",
+        "measured": {
+          "min_frame_mean": 92.6,
+          "qr_decodes_crf32_720": true
+        },
+        "note": "reads as one pull-back to orbit but has two visible dissolves (f100-110, f195-210) and a clay-like mesa plate"
+      }
+    },
+    {
+      "input": "input_02.jpg",
+      "seed": 22,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": null,
+      "note": "new 1088x1920 Qwen-Image-Edit-2511 avatar still (examples/_subjects/goldens-source.json: avatar_highway.jpg); not rendered yet (1080p golden pass pending)"
+    },
+    {
+      "input": "input_03.jpg",
+      "seed": 33,
+      "size": [
+        1280,
+        704
+      ],
+      "ladder": {
+        "S0": "ladder_03_S0.png",
+        "S1": "ladder_03_S1.png (Qwen, padded 0.5x canvas; invented legs/shoes; ~3.5x)"
+      },
+      "inner_rects": {
+        "S0->S1": [
+          0.3546,
+          0.2803,
+          0.6403,
+          0.566
+        ]
+      },
+      "fade_end": {
+        "S0->S1": 0.5
+      },
+      "pull_back": {
+        "pass": true,
+        "render": "outputs/earth_zoom/final/pull_back_g03.mp4 (+_reverse; run ez_g03_A_r2, recipe 5708ad2d6e)",
+        "scale": 3.5,
+        "measured": {
+          "min_frame_mean": 74.2,
+          "max_interframe_diff": 9.71,
+          "median_interframe_diff": 8.7,
+          "qr_decodes_crf32_720": true
+        },
+        "note": "plates: face+chest -> full length, no translucent rock or portal; S1's legs kept below the pasted torso (inpaint limited to the footprint); 3.5x is under LAW-2's 4x",
+        "expected": {
+          "file": "expected/input_03_seed33_final.mp4",
+          "size": [
+            1920,
+            1088
+          ],
+          "wall_s": 138.8,
+          "recipe": "5137517dc7",
+          "sha256": "e86b8093185e8d670e42e27c7655557e7ba6fe1ed163a474310e56dd5d94faa3",
+          "pass": true,
+          "observation": "shipped S1 plate (1280x704) upscaled, recipe 5708ad2d6e graph: face+chest -> full length 3.5x, no ghost or portal; same as 720p",
+          "strip": "tmp/obs/golden_final/earth_zoom_expected_input_03_seed33_final/strip.png",
+          "reverse": "expected/input_03_seed33_final_reverse.mp4"
+        }
+      }
+    }
+  ],
+  "verdict": "Pull Back: 2/2 attempted goldens pass (01, 03), re-rendered ghost-free for . Full Earth Zoom (face -> orbit): 1 render, FAIL on seamlessness; acceptance not met.",
+  "expected_note": "1080p finals from python scripts/render_goldens.py --size final; hashes in examples/RENDER-LOG.md | inner_rect is now measured per still (SGEarthZoomPath auto_inner_rect, recorded in recipe extra.inner_rect). Offline on these golden stills with the BiRefNet matte: input_01 S0->S1 [0.3864,0.5234,0.6108,0.7477] conf 0.80 (hand-measured [0.372,0.512,0.622,0.762]), input_03 [0.3523,0.2827,0.6445,0.5753] conf 0.92 (hand [0.3546,0.2803,0.6403,0.566]). Fresh app renders: input_03 seed 33 rect [0.3849,0.4484,0.6193,0.6828] conf 0.752 clean; input_01 seed 11 (prompt now forbids straight arch edges) rect [0.4119,0.5398,0.5824,0.7109] conf 0.826 clean."
+}

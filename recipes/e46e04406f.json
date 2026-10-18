@@ -1,0 +1,1243 @@
+{
+  "schema": "opensauce.recipe/1",
+  "id": "e46e04406f",
+  "created": "2026-10-18T01:16:12+00:00",
+  "preset": "disintegrate",
+  "seed": 22,
+  "inputs": [
+    {
+      "name": "input_02.jpg",
+      "sha256": "7e3e3807064e31195055e27cda3e369decaaec997c2cf4ea5c8d013fea48e8bc"
+    }
+  ],
+  "models": [
+    "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+    "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+    "ltx-2.5-video-vae-bf16.safetensors",
+    "ltx-2.5-audio-vae-bf16.safetensors",
+    "qwen-image-edit-2511-Q4_K_M.gguf (stage)",
+    "qwen_2.5_vl_7b_fp8_scaled.safetensors (stage)",
+    "qwen_image_vae.safetensors (stage)",
+    "BiRefNet General.safetensors (stage)"
+  ],
+  "extra": {
+    "stage_workflow": "workflows/_stage_disintegrate_plate.api.json",
+    "base_url": "https://github.com/lightbrushproject/opensauce/blob/main/recipes/"
+  },
+  "api_workflow": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      },
+      "_meta": {
+        "title": "UNETLoader"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      },
+      "_meta": {
+        "title": "VAELoader"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      },
+      "_meta": {
+        "title": "VAELoader"
+      }
+    },
+    "5": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "type": "ltxv",
+        "device": "default"
+      },
+      "_meta": {
+        "title": "CLIPLoader"
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": "A man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, standing on a concrete rooftop at dusk above a city skyline. He holds still, his arms staying exactly where they are, as he disintegrates: his body dries into cracked grey ash from his hands and shoulders inward, the ash breaks into flakes and glowing orange embers, and a steady wind carries the flakes away to the left in a streaming cloud. His fingers, arms and legs crumble away first and his body loses volume from the edges inward, ragged holes opening through it, until only his head is left, his two eyes still glowing until they go out and the last ash blows away. The rooftop and skyline behind him stays unchanged, framing never changes. Photoreal, cinematic, fine detail"
+      },
+      "_meta": {
+        "title": "OS:prompt"
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": "pc game, console game, video game, cartoon, childish, ugly, blurry face, changing face, extra face, extra arms, duplicated limbs, smeared, transparent body, translucent, ghost, double exposure, black frames, fade to black, camera movement, zoom, arms folding, arms moving"
+      },
+      "_meta": {
+        "title": "OS:negative"
+      }
+    },
+    "8": {
+      "class_type": "LTXVConditioning",
+      "inputs": {
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "frame_rate": 24.0
+      },
+      "_meta": {
+        "title": "OS:fps_cond"
+      }
+    },
+    "9": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "input_02.jpg"
+      },
+      "_meta": {
+        "title": "OS:image"
+      },
+      "is_changed": [
+        "7e3e3807064e31195055e27cda3e369decaaec997c2cf4ea5c8d013fea48e8bc"
+      ]
+    },
+    "10": {
+      "class_type": "ResizeImageMaskNode",
+      "inputs": {
+        "input": [
+          "9",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.width": 1088,
+        "resize_type.height": 1920,
+        "resize_type.crop": "center",
+        "scale_method": "lanczos"
+      },
+      "_meta": {
+        "title": "OS:resize"
+      }
+    },
+    "15": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "inputs": {
+        "frames_number": 97,
+        "frame_rate": 24,
+        "batch_size": 1,
+        "audio_vae": [
+          "4",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "OS:audio_latent"
+      }
+    },
+    "16": {
+      "class_type": "LTXVConcatAVLatent",
+      "inputs": {
+        "video_latent": [
+          "77",
+          2
+        ],
+        "audio_latent": [
+          "15",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVConcatAVLatent"
+      }
+    },
+    "17": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 22
+      },
+      "_meta": {
+        "title": "OS:seed"
+      }
+    },
+    "18": {
+      "class_type": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      },
+      "_meta": {
+        "title": "KSamplerSelect"
+      }
+    },
+    "19": {
+      "class_type": "ManualSigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      },
+      "_meta": {
+        "title": "ManualSigmas"
+      }
+    },
+    "20": {
+      "class_type": "LTXVDualCFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "77",
+          0
+        ],
+        "negative": [
+          "77",
+          1
+        ],
+        "video_cfg": 1.0,
+        "audio_cfg": 1.0
+      },
+      "_meta": {
+        "title": "LTXVDualCFGGuider"
+      }
+    },
+    "21": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "17",
+          0
+        ],
+        "guider": [
+          "20",
+          0
+        ],
+        "sampler": [
+          "18",
+          0
+        ],
+        "sigmas": [
+          "19",
+          0
+        ],
+        "latent_image": [
+          "16",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "SamplerCustomAdvanced"
+      }
+    },
+    "22": {
+      "class_type": "LTXVSeparateAVLatent",
+      "inputs": {
+        "av_latent": [
+          "21",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVSeparateAVLatent"
+      }
+    },
+    "23": {
+      "class_type": "LTXVCropGuides",
+      "inputs": {
+        "positive": [
+          "77",
+          0
+        ],
+        "negative": [
+          "77",
+          1
+        ],
+        "latent": [
+          "22",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVCropGuides"
+      }
+    },
+    "34": {
+      "class_type": "VAEDecodeTiled",
+      "inputs": {
+        "samples": [
+          "23",
+          2
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "tile_size": 512,
+        "overlap": 64,
+        "temporal_size": 64,
+        "temporal_overlap": 16
+      },
+      "_meta": {
+        "title": "VAEDecodeTiled"
+      }
+    },
+    "35": {
+      "class_type": "LTXVAudioVAEDecode",
+      "inputs": {
+        "samples": [
+          "22",
+          1
+        ],
+        "audio_vae": [
+          "4",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVAudioVAEDecode"
+      }
+    },
+    "36": {
+      "class_type": "CreateVideo",
+      "inputs": {
+        "images": [
+          "52",
+          0
+        ],
+        "fps": 24.0,
+        "audio": [
+          "35",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "OS:create"
+      }
+    },
+    "37": {
+      "class_type": "SaveVideo",
+      "inputs": {
+        "video": [
+          "36",
+          0
+        ],
+        "filename_prefix": "opensauce/golden_disintegrate_input_02_seed22_final",
+        "format": "mp4",
+        "format.codec": "h264"
+      },
+      "_meta": {
+        "title": "OS:save"
+      }
+    },
+    "43": {
+      "class_type": "EmptyLTXVLatentVideo",
+      "inputs": {
+        "width": 1088,
+        "height": 1920,
+        "length": 97,
+        "batch_size": 1
+      },
+      "_meta": {
+        "title": "OS:latent_full"
+      }
+    },
+    "50": {
+      "class_type": "SGSpeedRamp",
+      "inputs": {
+        "images": [
+          "34",
+          0
+        ],
+        "curve": "linear",
+        "hit_at": 0.6,
+        "blend": false
+      },
+      "_meta": {
+        "title": "OS:ramp"
+      }
+    },
+    "51": {
+      "class_type": "SGGradeChip",
+      "inputs": {
+        "images": [
+          "50",
+          0
+        ],
+        "chip": "none",
+        "grain_amount": 0.0,
+        "seed": 42
+      },
+      "_meta": {
+        "title": "OS:grade"
+      }
+    },
+    "52": {
+      "class_type": "SGRecipeEmbed",
+      "inputs": {
+        "images": [
+          "51",
+          0
+        ],
+        "preset": "disintegrate",
+        "seed": 22,
+        "recipe_base_url": "https://github.com/lightbrushproject/opensauce/blob/main/recipes/",
+        "models": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors\ngemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors\nltx-2.5-video-vae-bf16.safetensors\nltx-2.5-audio-vae-bf16.safetensors\nqwen-image-edit-2511-Q4_K_M.gguf (stage)\nqwen_2.5_vl_7b_fp8_scaled.safetensors (stage)\nqwen_image_vae.safetensors (stage)\nBiRefNet General.safetensors (stage)",
+        "extra_json": "{\"stage_workflow\": \"workflows/_stage_disintegrate_plate.api.json\", \"inputs\": [{\"name\": \"input_02.jpg\", \"sha256\": \"7e3e3807064e31195055e27cda3e369decaaec997c2cf4ea5c8d013fea48e8bc\"}]}"
+      },
+      "_meta": {
+        "title": "OS:recipe"
+      }
+    },
+    "11": {
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "OS:image_end"
+      },
+      "inputs": {
+        "image": "0d9eef9dd6bd7326.png"
+      },
+      "is_changed": [
+        "c3787d432f3576d8c4b14a2c12a172b2db6ea6b31af100a39dbffc075202df0e"
+      ]
+    },
+    "12": {
+      "class_type": "ResizeImageMaskNode",
+      "_meta": {
+        "title": "OS:resize_end"
+      },
+      "inputs": {
+        "input": [
+          "11",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.width": 1088,
+        "resize_type.height": 1920,
+        "resize_type.crop": "center",
+        "scale_method": "lanczos"
+      }
+    },
+    "13": {
+      "class_type": "LTXVPreprocess",
+      "_meta": {
+        "title": "LTXVPreprocess"
+      },
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "70": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide_first"
+      },
+      "inputs": {
+        "positive": [
+          "8",
+          0
+        ],
+        "negative": [
+          "8",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "43",
+          0
+        ],
+        "image": [
+          "13",
+          0
+        ],
+        "frame_idx": 0,
+        "strength": 1.0
+      }
+    },
+    "80": {
+      "class_type": "LoadRembgByBiRefNetModel",
+      "_meta": {
+        "title": "OS:matte_model"
+      },
+      "inputs": {
+        "model": "General.safetensors",
+        "device": "AUTO",
+        "use_weight": false,
+        "dtype": "float32"
+      }
+    },
+    "81": {
+      "class_type": "GetMaskByBiRefNet",
+      "_meta": {
+        "title": "OS:matte"
+      },
+      "inputs": {
+        "model": [
+          "80",
+          0
+        ],
+        "images": [
+          "10",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "upscale_method": "bilinear",
+        "mask_threshold": 0.0
+      }
+    },
+    "82": {
+      "class_type": "GrowMask",
+      "_meta": {
+        "title": "OS:matte_grow"
+      },
+      "inputs": {
+        "mask": [
+          "81",
+          0
+        ],
+        "expand": 8,
+        "tapered_corners": true
+      }
+    },
+    "83": {
+      "class_type": "SGDisintegrate",
+      "_meta": {
+        "title": "OS:disintegrate"
+      },
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "plate": [
+          "12",
+          0
+        ],
+        "mask": [
+          "82",
+          0
+        ],
+        "n_frames": 97,
+        "start": 0.1,
+        "end": 0.85,
+        "wind_x": -1.0,
+        "wind_y": -0.3,
+        "density": 0.22,
+        "seed": 0,
+        "body_base": 0.4,
+        "pin": 0.85,
+        "wake": 0.4
+      }
+    },
+    "84": {
+      "class_type": "LTXVPreprocess",
+      "_meta": {
+        "title": "LTXVPreprocess"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "100": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_8"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 8,
+        "length": 1
+      }
+    },
+    "101": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_8"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 8,
+        "length": 1
+      }
+    },
+    "102": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_8"
+      },
+      "inputs": {
+        "image": [
+          "101",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "104": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "70",
+          0
+        ],
+        "negative": [
+          "70",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "70",
+          2
+        ],
+        "image": [
+          "100",
+          0
+        ],
+        "frame_idx": 8,
+        "strength": 1.0,
+        "attention_mask": [
+          "102",
+          0
+        ]
+      }
+    },
+    "105": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_16"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 16,
+        "length": 1
+      }
+    },
+    "106": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_16"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 16,
+        "length": 1
+      }
+    },
+    "107": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_16"
+      },
+      "inputs": {
+        "image": [
+          "106",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "109": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "104",
+          0
+        ],
+        "negative": [
+          "104",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "104",
+          2
+        ],
+        "image": [
+          "105",
+          0
+        ],
+        "frame_idx": 16,
+        "strength": 1.0,
+        "attention_mask": [
+          "107",
+          0
+        ]
+      }
+    },
+    "110": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_32"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 32,
+        "length": 1
+      }
+    },
+    "111": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_32"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 32,
+        "length": 1
+      }
+    },
+    "112": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_32"
+      },
+      "inputs": {
+        "image": [
+          "111",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "114": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "109",
+          0
+        ],
+        "negative": [
+          "109",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "109",
+          2
+        ],
+        "image": [
+          "110",
+          0
+        ],
+        "frame_idx": 32,
+        "strength": 1.0,
+        "attention_mask": [
+          "112",
+          0
+        ]
+      }
+    },
+    "115": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_48"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 48,
+        "length": 1
+      }
+    },
+    "116": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_48"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 48,
+        "length": 1
+      }
+    },
+    "117": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_48"
+      },
+      "inputs": {
+        "image": [
+          "116",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "119": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "114",
+          0
+        ],
+        "negative": [
+          "114",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "114",
+          2
+        ],
+        "image": [
+          "115",
+          0
+        ],
+        "frame_idx": 48,
+        "strength": 1.0,
+        "attention_mask": [
+          "117",
+          0
+        ]
+      }
+    },
+    "120": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_56"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 56,
+        "length": 1
+      }
+    },
+    "121": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_56"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 56,
+        "length": 1
+      }
+    },
+    "122": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_56"
+      },
+      "inputs": {
+        "image": [
+          "121",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "124": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "119",
+          0
+        ],
+        "negative": [
+          "119",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "119",
+          2
+        ],
+        "image": [
+          "120",
+          0
+        ],
+        "frame_idx": 56,
+        "strength": 1.0,
+        "attention_mask": [
+          "122",
+          0
+        ]
+      }
+    },
+    "125": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_64"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 64,
+        "length": 1
+      }
+    },
+    "126": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_64"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 64,
+        "length": 1
+      }
+    },
+    "127": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_64"
+      },
+      "inputs": {
+        "image": [
+          "126",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "129": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "124",
+          0
+        ],
+        "negative": [
+          "124",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "124",
+          2
+        ],
+        "image": [
+          "125",
+          0
+        ],
+        "frame_idx": 64,
+        "strength": 1.0,
+        "attention_mask": [
+          "127",
+          0
+        ]
+      }
+    },
+    "130": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_72"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 72,
+        "length": 1
+      }
+    },
+    "131": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_72"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 72,
+        "length": 1
+      }
+    },
+    "132": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_72"
+      },
+      "inputs": {
+        "image": [
+          "131",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "134": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "129",
+          0
+        ],
+        "negative": [
+          "129",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "129",
+          2
+        ],
+        "image": [
+          "130",
+          0
+        ],
+        "frame_idx": 72,
+        "strength": 1.0,
+        "attention_mask": [
+          "132",
+          0
+        ]
+      }
+    },
+    "135": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_80"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 80,
+        "length": 1
+      }
+    },
+    "136": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_80"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 80,
+        "length": 1
+      }
+    },
+    "137": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_80"
+      },
+      "inputs": {
+        "image": [
+          "136",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "139": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "134",
+          0
+        ],
+        "negative": [
+          "134",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "134",
+          2
+        ],
+        "image": [
+          "135",
+          0
+        ],
+        "frame_idx": 80,
+        "strength": 1.0,
+        "attention_mask": [
+          "137",
+          0
+        ]
+      }
+    },
+    "140": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "key_96"
+      },
+      "inputs": {
+        "image": [
+          "84",
+          0
+        ],
+        "batch_index": 96,
+        "length": 1
+      }
+    },
+    "141": {
+      "class_type": "ImageFromBatch",
+      "_meta": {
+        "title": "keyw_96"
+      },
+      "inputs": {
+        "image": [
+          "83",
+          1
+        ],
+        "batch_index": 96,
+        "length": 1
+      }
+    },
+    "142": {
+      "class_type": "ImageToMask",
+      "_meta": {
+        "title": "keym_96"
+      },
+      "inputs": {
+        "image": [
+          "141",
+          0
+        ],
+        "channel": "red"
+      }
+    },
+    "77": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide"
+      },
+      "inputs": {
+        "positive": [
+          "139",
+          0
+        ],
+        "negative": [
+          "139",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "139",
+          2
+        ],
+        "image": [
+          "140",
+          0
+        ],
+        "frame_idx": 96,
+        "strength": 1.0,
+        "attention_mask": [
+          "142",
+          0
+        ]
+      }
+    }
+  }
+}

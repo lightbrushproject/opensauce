@@ -1,0 +1,289 @@
+{
+  "schema": "opensauce.recipe/1",
+  "id": "84729848dd",
+  "created": "2026-10-17T13:00:23+00:00",
+  "preset": "earth_zoom:zoom_out",
+  "seed": 11,
+  "inputs": [
+    {
+      "name": "input_01.jpg",
+      "sha256": "72c87c11a9d47932810b6bfd5cadf08d4bb15b4c3d5be6ab806c8f2c2007820c"
+    }
+  ],
+  "models": [
+    "qwen-image-edit-2511-Q4_K_M.gguf",
+    "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+    "qwen_image_vae.safetensors"
+  ],
+  "extra": {},
+  "api_workflow": {
+    "9": {
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "OS:image"
+      },
+      "inputs": {
+        "image": "opensauce_test.png"
+      }
+    },
+    "10": {
+      "class_type": "ResizeImageMaskNode",
+      "_meta": {
+        "title": "OS:resize"
+      },
+      "inputs": {
+        "input": [
+          "9",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.width": 704,
+        "resize_type.height": 1280,
+        "resize_type.crop": "center",
+        "scale_method": "lanczos"
+      }
+    },
+    "11": {
+      "class_type": "ImageScaleBy",
+      "_meta": {
+        "title": "OS:shrink"
+      },
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "upscale_method": "lanczos",
+        "scale_by": 0.5
+      }
+    },
+    "12": {
+      "class_type": "ImagePadForOutpaint",
+      "_meta": {
+        "title": "OS:pad"
+      },
+      "inputs": {
+        "image": [
+          "11",
+          0
+        ],
+        "left": 176,
+        "top": 320,
+        "right": 176,
+        "bottom": 320,
+        "feathering": 0
+      }
+    },
+    "13": {
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "OS:save_canvas"
+      },
+      "inputs": {
+        "images": [
+          "12",
+          0
+        ],
+        "filename_prefix": "opensauce/earth_zoom_canvas"
+      }
+    },
+    "30": {
+      "class_type": "UnetLoaderGGUF",
+      "_meta": {
+        "title": "OS:edit_unet"
+      },
+      "inputs": {
+        "unet_name": "qwen-image-edit-2511-Q4_K_M.gguf"
+      }
+    },
+    "31": {
+      "class_type": "ModelSamplingAuraFlow",
+      "_meta": {
+        "title": "ModelSamplingAuraFlow"
+      },
+      "inputs": {
+        "model": [
+          "30",
+          0
+        ],
+        "shift": 3.1
+      }
+    },
+    "32": {
+      "class_type": "CFGNorm",
+      "_meta": {
+        "title": "CFGNorm"
+      },
+      "inputs": {
+        "model": [
+          "31",
+          0
+        ],
+        "strength": 1.0
+      }
+    },
+    "33": {
+      "class_type": "CLIPLoader",
+      "_meta": {
+        "title": "OS:edit_clip"
+      },
+      "inputs": {
+        "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      }
+    },
+    "34": {
+      "class_type": "VAELoader",
+      "_meta": {
+        "title": "OS:edit_vae"
+      },
+      "inputs": {
+        "vae_name": "qwen_image_vae.safetensors"
+      }
+    },
+    "35": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "_meta": {
+        "title": "OS:edit_prompt"
+      },
+      "inputs": {
+        "clip": [
+          "33",
+          0
+        ],
+        "vae": [
+          "34",
+          0
+        ],
+        "image1": [
+          "12",
+          0
+        ],
+        "prompt": "The flat grey bands around the photo are empty canvas. Paint over every grey area so the picture fills the whole frame edge to edge, a seamless wider view of the same scene from twice as far away. Above: open sky and distant red sandstone cliffs. Below and around: sandy canyon floor and rock. The man stays small in the middle, unchanged. Same warm soft daylight, same colors, photoreal. No grey, no border, no frame, no text."
+      }
+    },
+    "36": {
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "_meta": {
+        "title": "OS:edit_negative"
+      },
+      "inputs": {
+        "clip": [
+          "33",
+          0
+        ],
+        "vae": [
+          "34",
+          0
+        ],
+        "image1": [
+          "12",
+          0
+        ],
+        "prompt": ""
+      }
+    },
+    "37": {
+      "class_type": "FluxKontextMultiReferenceLatentMethod",
+      "_meta": {
+        "title": "ref_pos"
+      },
+      "inputs": {
+        "conditioning": [
+          "35",
+          0
+        ],
+        "reference_latents_method": "index_timestep_zero"
+      }
+    },
+    "38": {
+      "class_type": "FluxKontextMultiReferenceLatentMethod",
+      "_meta": {
+        "title": "ref_neg"
+      },
+      "inputs": {
+        "conditioning": [
+          "36",
+          0
+        ],
+        "reference_latents_method": "index_timestep_zero"
+      }
+    },
+    "39": {
+      "class_type": "VAEEncode",
+      "_meta": {
+        "title": "VAEEncode"
+      },
+      "inputs": {
+        "pixels": [
+          "12",
+          0
+        ],
+        "vae": [
+          "34",
+          0
+        ]
+      }
+    },
+    "40": {
+      "class_type": "KSampler",
+      "_meta": {
+        "title": "OS:edit_sampler"
+      },
+      "inputs": {
+        "model": [
+          "32",
+          0
+        ],
+        "positive": [
+          "37",
+          0
+        ],
+        "negative": [
+          "38",
+          0
+        ],
+        "latent_image": [
+          "39",
+          0
+        ],
+        "seed": 9,
+        "steps": 30,
+        "cfg": 4.0,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1.0
+      }
+    },
+    "41": {
+      "class_type": "VAEDecode",
+      "_meta": {
+        "title": "VAEDecode"
+      },
+      "inputs": {
+        "samples": [
+          "40",
+          0
+        ],
+        "vae": [
+          "34",
+          0
+        ]
+      }
+    },
+    "44": {
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "OS:save_still"
+      },
+      "inputs": {
+        "images": [
+          "41",
+          0
+        ],
+        "filename_prefix": "opensauce/pull_back_11_zoom_out"
+      }
+    }
+  }
+}

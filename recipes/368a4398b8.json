@@ -1,0 +1,239 @@
+{
+  "schema": "opensauce.recipe/1",
+  "id": "368a4398b8",
+  "created": "2026-10-17T17:54:12+00:00",
+  "preset": "trailer",
+  "seed": 11,
+  "inputs": [
+    {
+      "name": "input_01.jpg",
+      "sha256": "5b2784fafae54fc20ed4c3d570e0b49595434ac73f24f6ddc11f89bd344dcaea"
+    }
+  ],
+  "models": [
+    "LTX-2.5 distilled int8"
+  ],
+  "extra": {
+    "shots": [
+      {
+        "name": "vertigo",
+        "file": "vertigo_g01_v3_final.mp4",
+        "recipe": "4b19c72f9d"
+      },
+      {
+        "name": "crash_zoom",
+        "file": "crash_zoom_g01_v2_final.mp4",
+        "recipe": "938b4066c0"
+      },
+      {
+        "name": "levitate",
+        "file": "levitate25v3_g01.mp4",
+        "recipe": "4e67d59545"
+      },
+      {
+        "name": "face",
+        "file": "crash_zoom_g01_v2_final.mp4",
+        "recipe": "938b4066c0"
+      },
+      {
+        "name": "pull_back",
+        "file": "pull_back_g01_final.mp4",
+        "recipe": "82207ba427"
+      }
+    ],
+    "title": "OPEN SAUCE",
+    "subtitle": "A LIGHTBRUSH PRESET"
+  },
+  "api_workflow": {
+    "plan": {
+      "fps": 24,
+      "shots": [
+        {
+          "name": "vertigo",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 24,
+          "in_end": 59,
+          "src_frames": 36,
+          "out_start": 0,
+          "out_end": 35,
+          "out_frames": 36
+        },
+        {
+          "name": "crash_zoom",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 1,
+          "in_end": 24,
+          "src_frames": 24,
+          "out_start": 36,
+          "out_end": 71,
+          "out_frames": 36
+        },
+        {
+          "name": "levitate",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 22,
+          "in_end": 76,
+          "src_frames": 55,
+          "out_start": 72,
+          "out_end": 126,
+          "out_frames": 55
+        },
+        {
+          "name": "face",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 24,
+          "in_end": 24,
+          "src_frames": 1,
+          "out_start": 127,
+          "out_end": 128,
+          "out_frames": 2
+        },
+        {
+          "name": "pull_back",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 0,
+          "in_end": 83,
+          "src_frames": 84,
+          "out_start": 129,
+          "out_end": 212,
+          "out_frames": 84
+        }
+      ],
+      "title": {
+        "mode": "overlay",
+        "out_start": 232,
+        "out_end": 274,
+        "out_frames": 43,
+        "scale_in_frames": 6
+      },
+      "total_frames": 275,
+      "total_s": 11.458333333333334,
+      "qr_frames": 12,
+      "bridges": [
+        {
+          "a": "vertigo",
+          "b": "crash_zoom",
+          "kind": "whip",
+          "diff": 34.27,
+          "frames": 5,
+          "prompt": null,
+          "seed": null,
+          "key": null,
+          "used_frames": 5
+        },
+        {
+          "a": "crash_zoom",
+          "b": "levitate",
+          "kind": "bridge",
+          "diff": 63.98,
+          "frames": 33,
+          "prompt": "The shot continues in one unbroken take, the framing changes smoothly and naturally from the first frame to the last, same man, same canyon, same light, no cut. The camera glides continuously; a man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, in a red sandstone canyon with floating golden sparks. Both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic, fine detail",
+          "seed": 11,
+          "key": "0fc3af6b50",
+          "file": "bridge_0fc3af6b50.mp4",
+          "used_frames": 16
+        },
+        {
+          "a": "levitate",
+          "b": "face",
+          "kind": "bridge",
+          "diff": 67.01,
+          "frames": 33,
+          "prompt": "The shot continues in one unbroken take, no cut: the camera rushes forward fast and crash-zooms into a close-up of his face while he floats down, same man, same canyon, same light; a man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, in a red sandstone canyon with floating golden sparks. Both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic",
+          "seed": 11,
+          "key": "c166e2d0da",
+          "file": "bridge_c166e2d0da.mp4",
+          "used_frames": 25
+        },
+        {
+          "a": "face",
+          "b": "pull_back",
+          "kind": "bridge",
+          "diff": 62.88,
+          "frames": 33,
+          "prompt": "The shot continues in one unbroken take, no cut: the camera pulls back fast from the close-up of his face to a wide shot, revealing him standing between tall twisted red sandstone pillars in hazy desert light; a man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, in a red sandstone canyon with floating golden sparks. Both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic",
+          "seed": 11,
+          "key": "805cdbfa91",
+          "file": "bridge_805cdbfa91.mp4",
+          "used_frames": 16
+        }
+      ],
+      "timeline": [
+        {
+          "piece": "vertigo",
+          "out_start": 0,
+          "out_end": 35
+        },
+        {
+          "piece": "whip:vertigo->crash_zoom",
+          "out_start": 36,
+          "out_end": 40
+        },
+        {
+          "piece": "crash_zoom",
+          "out_start": 41,
+          "out_end": 76
+        },
+        {
+          "piece": "bridge:crash_zoom->levitate",
+          "out_start": 77,
+          "out_end": 92
+        },
+        {
+          "piece": "levitate",
+          "out_start": 93,
+          "out_end": 147
+        },
+        {
+          "piece": "bridge:levitate->face",
+          "out_start": 148,
+          "out_end": 172
+        },
+        {
+          "piece": "face",
+          "out_start": 173,
+          "out_end": 174
+        },
+        {
+          "piece": "bridge:face->pull_back",
+          "out_start": 175,
+          "out_end": 190
+        },
+        {
+          "piece": "pull_back",
+          "out_start": 191,
+          "out_end": 274
+        }
+      ]
+    },
+    "grade_chip": "warm_film",
+    "bridges": {
+      "enabled": true,
+      "workflow": "workflows/bridge.api.json",
+      "match_threshold": 8.0,
+      "bridge_in": {
+        "crash_zoom": {
+          "mode": "whip",
+          "frames": 5,
+          "note": "LTX bridge from the vertigo settle cut internally; a 5-frame zoom whip reads as one move"
+        },
+        "levitate": {
+          "frames": 33
+        },
+        "face": {
+          "frames": 33,
+          "prompt": "The shot continues in one unbroken take, no cut: the camera rushes forward fast and crash-zooms into a close-up of his face while he floats down, same man, same canyon, same light; a man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, in a red sandstone canyon with floating golden sparks. Both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic"
+        },
+        "pull_back": {
+          "frames": 33,
+          "prompt": "The shot continues in one unbroken take, no cut: the camera pulls back fast from the close-up of his face to a wide shot, revealing him standing between tall twisted red sandstone pillars in hazy desert light; a man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, in a red sandstone canyon with floating golden sparks. Both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible, photoreal, cinematic"
+        }
+      }
+    }
+  }
+}

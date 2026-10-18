@@ -1,0 +1,555 @@
+{
+  "schema": "opensauce.recipe/1",
+  "id": "404e30cc83",
+  "created": "2026-10-18T12:27:28+00:00",
+  "preset": "levitate",
+  "seed": 22,
+  "inputs": [
+    {
+      "name": "input_02.jpg",
+      "sha256": "8699b80f3f728294c0eac5cdfa0b8b5920c222bc139553bb036b2e9e53f9fc4a"
+    }
+  ],
+  "models": [
+    "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+    "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+    "ltx-2.5-audio-vae-bf16.safetensors",
+    "ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors",
+    "ltx-2.5-video-vae-bf16.safetensors"
+  ],
+  "extra": {},
+  "api_workflow": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      },
+      "_meta": {
+        "title": "UNETLoader"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      },
+      "_meta": {
+        "title": "VAELoader"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      },
+      "_meta": {
+        "title": "VAELoader"
+      }
+    },
+    "5": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "type": "ltxv",
+        "device": "default"
+      },
+      "_meta": {
+        "title": "CLIPLoader"
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": "Locked-off static shot, the framing never changes and the man stays the same size in frame. The man with glowing golden eyes and glowing circuit-lit forearms slowly lifts off the ground and floats straight upward, feet leaving the ground, long dark hair and loose clothing drifting upward as if weightless, eyes and forearms stay brightly lit the whole time, golden particles swirling around him, face and eyes stay sharp and unchanged, clothing print stays identical and only on the shirt, cinematic, photoreal, smooth motion, lifts a full body-height, slow and steady"
+      },
+      "_meta": {
+        "title": "OS:prompt"
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": "pc game, console game, video game, cartoon, childish, ugly, static subject, frozen, still image, camera zoom, dolly, push in, pull out, close-up, cropped head, subject leaving the frame, blurry face, changing face, melting, warped text, dark eyes, glow fading, tripod, camera equipment, pattern spreading to pants"
+      },
+      "_meta": {
+        "title": "OS:negative"
+      }
+    },
+    "8": {
+      "class_type": "LTXVConditioning",
+      "inputs": {
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "frame_rate": 24.0
+      },
+      "_meta": {
+        "title": "OS:fps_cond"
+      }
+    },
+    "9": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "input_02.jpg"
+      },
+      "_meta": {
+        "title": "OS:image"
+      }
+    },
+    "10": {
+      "class_type": "ResizeImageMaskNode",
+      "inputs": {
+        "input": [
+          "9",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.width": 1088,
+        "resize_type.height": 1920,
+        "resize_type.crop": "center",
+        "scale_method": "lanczos"
+      },
+      "_meta": {
+        "title": "OS:resize"
+      }
+    },
+    "11": {
+      "class_type": "ResizeImageMaskNode",
+      "inputs": {
+        "input": [
+          "10",
+          0
+        ],
+        "resize_type": "scale longer dimension",
+        "resize_type.longer_size": 1536,
+        "scale_method": "area"
+      },
+      "_meta": {
+        "title": "ResizeImageMaskNode"
+      }
+    },
+    "12": {
+      "class_type": "LTXVPreprocess",
+      "inputs": {
+        "image": [
+          "11",
+          0
+        ],
+        "img_compression": 18
+      },
+      "_meta": {
+        "title": "LTXVPreprocess"
+      }
+    },
+    "13": {
+      "class_type": "EmptyLTXVLatentVideo",
+      "inputs": {
+        "width": 544,
+        "height": 960,
+        "length": 97,
+        "batch_size": 1
+      },
+      "_meta": {
+        "title": "OS:latent"
+      }
+    },
+    "14": {
+      "class_type": "LTXVImgToVideoInplace",
+      "inputs": {
+        "vae": [
+          "3",
+          0
+        ],
+        "image": [
+          "12",
+          0
+        ],
+        "latent": [
+          "13",
+          0
+        ],
+        "strength": 0.7,
+        "bypass": false
+      },
+      "_meta": {
+        "title": "LTXVImgToVideoInplace"
+      }
+    },
+    "15": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "inputs": {
+        "frames_number": 97,
+        "frame_rate": 24,
+        "batch_size": 1,
+        "audio_vae": [
+          "4",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "OS:audio_latent"
+      }
+    },
+    "16": {
+      "class_type": "LTXVConcatAVLatent",
+      "inputs": {
+        "video_latent": [
+          "14",
+          0
+        ],
+        "audio_latent": [
+          "15",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVConcatAVLatent"
+      }
+    },
+    "17": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 22
+      },
+      "_meta": {
+        "title": "OS:seed"
+      }
+    },
+    "18": {
+      "class_type": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      },
+      "_meta": {
+        "title": "KSamplerSelect"
+      }
+    },
+    "19": {
+      "class_type": "ManualSigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      },
+      "_meta": {
+        "title": "ManualSigmas"
+      }
+    },
+    "20": {
+      "class_type": "LTXVDualCFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "8",
+          0
+        ],
+        "negative": [
+          "8",
+          1
+        ],
+        "video_cfg": 1.0,
+        "audio_cfg": 1.0
+      },
+      "_meta": {
+        "title": "LTXVDualCFGGuider"
+      }
+    },
+    "21": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "17",
+          0
+        ],
+        "guider": [
+          "20",
+          0
+        ],
+        "sampler": [
+          "18",
+          0
+        ],
+        "sigmas": [
+          "19",
+          0
+        ],
+        "latent_image": [
+          "16",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "SamplerCustomAdvanced"
+      }
+    },
+    "22": {
+      "class_type": "LTXVSeparateAVLatent",
+      "inputs": {
+        "av_latent": [
+          "21",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVSeparateAVLatent"
+      }
+    },
+    "24": {
+      "class_type": "LatentUpscaleModelLoader",
+      "inputs": {
+        "model_name": "ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors"
+      },
+      "_meta": {
+        "title": "LatentUpscaleModelLoader"
+      }
+    },
+    "25": {
+      "class_type": "LTXVLatentUpsampler",
+      "inputs": {
+        "samples": [
+          "22",
+          0
+        ],
+        "upscale_model": [
+          "24",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVLatentUpsampler"
+      }
+    },
+    "26": {
+      "class_type": "LTXVImgToVideoInplace",
+      "inputs": {
+        "vae": [
+          "3",
+          0
+        ],
+        "image": [
+          "12",
+          0
+        ],
+        "latent": [
+          "25",
+          0
+        ],
+        "strength": 1.0,
+        "bypass": false
+      },
+      "_meta": {
+        "title": "LTXVImgToVideoInplace"
+      }
+    },
+    "27": {
+      "class_type": "LTXVConcatAVLatent",
+      "inputs": {
+        "video_latent": [
+          "26",
+          0
+        ],
+        "audio_latent": [
+          "22",
+          1
+        ]
+      },
+      "_meta": {
+        "title": "LTXVConcatAVLatent"
+      }
+    },
+    "28": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 42
+      },
+      "_meta": {
+        "title": "RandomNoise"
+      }
+    },
+    "29": {
+      "class_type": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      },
+      "_meta": {
+        "title": "KSamplerSelect"
+      }
+    },
+    "30": {
+      "class_type": "ManualSigmas",
+      "inputs": {
+        "sigmas": "0.85, 0.7250, 0.4219, 0.0"
+      },
+      "_meta": {
+        "title": "ManualSigmas"
+      }
+    },
+    "31": {
+      "class_type": "LTXVDualCFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "8",
+          0
+        ],
+        "negative": [
+          "8",
+          1
+        ],
+        "video_cfg": 1.0,
+        "audio_cfg": 1.0
+      },
+      "_meta": {
+        "title": "LTXVDualCFGGuider"
+      }
+    },
+    "32": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "28",
+          0
+        ],
+        "guider": [
+          "31",
+          0
+        ],
+        "sampler": [
+          "29",
+          0
+        ],
+        "sigmas": [
+          "30",
+          0
+        ],
+        "latent_image": [
+          "27",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "SamplerCustomAdvanced"
+      }
+    },
+    "33": {
+      "class_type": "LTXVSeparateAVLatent",
+      "inputs": {
+        "av_latent": [
+          "32",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVSeparateAVLatent"
+      }
+    },
+    "34": {
+      "class_type": "VAEDecodeTiled",
+      "inputs": {
+        "samples": [
+          "33",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "tile_size": 512,
+        "overlap": 64,
+        "temporal_size": 64,
+        "temporal_overlap": 16
+      },
+      "_meta": {
+        "title": "VAEDecodeTiled"
+      }
+    },
+    "35": {
+      "class_type": "LTXVAudioVAEDecode",
+      "inputs": {
+        "samples": [
+          "33",
+          1
+        ],
+        "audio_vae": [
+          "4",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVAudioVAEDecode"
+      }
+    },
+    "36": {
+      "class_type": "CreateVideo",
+      "inputs": {
+        "images": [
+          "38",
+          0
+        ],
+        "fps": 24.0,
+        "audio": [
+          "35",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "OS:create"
+      }
+    },
+    "37": {
+      "class_type": "SaveVideo",
+      "inputs": {
+        "video": [
+          "36",
+          0
+        ],
+        "filename_prefix": "opensauce/ltx25_i2v",
+        "format": "mp4",
+        "format.codec": "h264"
+      },
+      "_meta": {
+        "title": "OS:save"
+      }
+    },
+    "38": {
+      "class_type": "SGRecipeEmbed",
+      "inputs": {
+        "images": [
+          "34",
+          0
+        ],
+        "preset": "levitate",
+        "seed": 22,
+        "recipe_base_url": "https://github.com/lightbrushproject/opensauce/blob/main/recipes/",
+        "models": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors\nltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors\nltx-2.5-audio-vae-bf16.safetensors\nltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors\nltx-2.5-video-vae-bf16.safetensors",
+        "extra_json": "{\"inputs\": [{\"name\": \"input_02.jpg\", \"sha256\": \"8699b80f3f728294c0eac5cdfa0b8b5920c222bc139553bb036b2e9e53f9fc4a\"}]}",
+        "burn_qr": false
+      },
+      "_meta": {
+        "title": "OS:recipe"
+      }
+    }
+  }
+}

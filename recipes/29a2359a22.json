@@ -1,0 +1,522 @@
+{
+  "schema": "opensauce.recipe/1",
+  "id": "29a2359a22",
+  "created": "2026-10-17T17:42:47+00:00",
+  "preset": "petrify",
+  "seed": 11,
+  "inputs": [
+    {
+      "name": "input_01.jpg",
+      "sha256": "5b2784fafae54fc20ed4c3d570e0b49595434ac73f24f6ddc11f89bd344dcaea"
+    }
+  ],
+  "models": [
+    "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+    "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+    "ltx-2.5-video-vae-bf16.safetensors",
+    "ltx-2.5-audio-vae-bf16.safetensors",
+    "qwen-image-edit-2511-Q4_K_M.gguf (stage)",
+    "qwen_2.5_vl_7b_fp8_scaled.safetensors (stage)",
+    "qwen_image_vae.safetensors (stage)",
+    "BiRefNet General.safetensors (stage)"
+  ],
+  "extra": {
+    "stage_workflow": "workflows/_stage_petrify_qwen.api.json",
+    "base_url": "https://github.com/lightbrushproject/opensauce/blob/main/recipes/"
+  },
+  "api_workflow": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors",
+        "weight_dtype": "default"
+      },
+      "_meta": {
+        "title": "UNETLoader"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ltx-2.5-video-vae-bf16.safetensors"
+      },
+      "_meta": {
+        "title": "VAELoader"
+      }
+    },
+    "4": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "ltx-2.5-audio-vae-bf16.safetensors"
+      },
+      "_meta": {
+        "title": "VAELoader"
+      }
+    },
+    "5": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors",
+        "type": "ltxv",
+        "device": "default"
+      },
+      "_meta": {
+        "title": "CLIPLoader"
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": "A man with long dark wavy hair under a black baseball cap, his two eyes glowing bright gold, glowing translucent circuit-lit forearms and hands, wearing a black t-shirt printed with the bold words DEITCH BEATS DON'T QUIT between two red mushrooms and gold circuit lines, standing in a red sandstone canyon. He holds still as grey stone spreads over him from his feet upward, turning his skin, hair, cap, shirt and jeans into weathered carved grey marble, until he is a motionless stone statue with the same face, his two eyes fading to dim amber embers. Fine grey dust falls from the stone and drifts down. The canyon behind him stays unchanged, framing never changes. Photoreal, cinematic, fine detail"
+      },
+      "_meta": {
+        "title": "OS:prompt"
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "clip": [
+          "5",
+          0
+        ],
+        "text": "pc game, console game, video game, cartoon, childish, ugly, blurry face, changing face, extra face, melting, smeared, duplicated limbs, black frames, fade to black, background turning to stone, camera movement, zoom"
+      },
+      "_meta": {
+        "title": "OS:negative"
+      }
+    },
+    "8": {
+      "class_type": "LTXVConditioning",
+      "inputs": {
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "frame_rate": 24.0
+      },
+      "_meta": {
+        "title": "OS:fps_cond"
+      }
+    },
+    "9": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "input_01.jpg"
+      },
+      "_meta": {
+        "title": "OS:image"
+      },
+      "is_changed": [
+        "5b2784fafae54fc20ed4c3d570e0b49595434ac73f24f6ddc11f89bd344dcaea"
+      ]
+    },
+    "10": {
+      "class_type": "ResizeImageMaskNode",
+      "inputs": {
+        "input": [
+          "9",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.width": 1088,
+        "resize_type.height": 1920,
+        "resize_type.crop": "center",
+        "scale_method": "lanczos"
+      },
+      "_meta": {
+        "title": "OS:resize"
+      }
+    },
+    "15": {
+      "class_type": "LTXVEmptyLatentAudio",
+      "inputs": {
+        "frames_number": 97,
+        "frame_rate": 24,
+        "batch_size": 1,
+        "audio_vae": [
+          "4",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "OS:audio_latent"
+      }
+    },
+    "16": {
+      "class_type": "LTXVConcatAVLatent",
+      "inputs": {
+        "video_latent": [
+          "77",
+          2
+        ],
+        "audio_latent": [
+          "15",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVConcatAVLatent"
+      }
+    },
+    "17": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 11
+      },
+      "_meta": {
+        "title": "OS:seed"
+      }
+    },
+    "18": {
+      "class_type": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "euler_ancestral"
+      },
+      "_meta": {
+        "title": "KSamplerSelect"
+      }
+    },
+    "19": {
+      "class_type": "ManualSigmas",
+      "inputs": {
+        "sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"
+      },
+      "_meta": {
+        "title": "ManualSigmas"
+      }
+    },
+    "20": {
+      "class_type": "LTXVDualCFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "77",
+          0
+        ],
+        "negative": [
+          "77",
+          1
+        ],
+        "video_cfg": 1.0,
+        "audio_cfg": 1.0
+      },
+      "_meta": {
+        "title": "LTXVDualCFGGuider"
+      }
+    },
+    "21": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "17",
+          0
+        ],
+        "guider": [
+          "20",
+          0
+        ],
+        "sampler": [
+          "18",
+          0
+        ],
+        "sigmas": [
+          "19",
+          0
+        ],
+        "latent_image": [
+          "16",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "SamplerCustomAdvanced"
+      }
+    },
+    "22": {
+      "class_type": "LTXVSeparateAVLatent",
+      "inputs": {
+        "av_latent": [
+          "21",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVSeparateAVLatent"
+      }
+    },
+    "23": {
+      "class_type": "LTXVCropGuides",
+      "inputs": {
+        "positive": [
+          "77",
+          0
+        ],
+        "negative": [
+          "77",
+          1
+        ],
+        "latent": [
+          "22",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVCropGuides"
+      }
+    },
+    "34": {
+      "class_type": "VAEDecodeTiled",
+      "inputs": {
+        "samples": [
+          "23",
+          2
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "tile_size": 512,
+        "overlap": 64,
+        "temporal_size": 64,
+        "temporal_overlap": 16
+      },
+      "_meta": {
+        "title": "VAEDecodeTiled"
+      }
+    },
+    "35": {
+      "class_type": "LTXVAudioVAEDecode",
+      "inputs": {
+        "samples": [
+          "22",
+          1
+        ],
+        "audio_vae": [
+          "4",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "LTXVAudioVAEDecode"
+      }
+    },
+    "36": {
+      "class_type": "CreateVideo",
+      "inputs": {
+        "images": [
+          "52",
+          0
+        ],
+        "fps": 24.0,
+        "audio": [
+          "35",
+          0
+        ]
+      },
+      "_meta": {
+        "title": "OS:create"
+      }
+    },
+    "37": {
+      "class_type": "SaveVideo",
+      "inputs": {
+        "video": [
+          "36",
+          0
+        ],
+        "filename_prefix": "opensauce/golden_petrify_input_01_seed11_final",
+        "format": "mp4",
+        "format.codec": "h264"
+      },
+      "_meta": {
+        "title": "OS:save"
+      }
+    },
+    "43": {
+      "class_type": "EmptyLTXVLatentVideo",
+      "inputs": {
+        "width": 1088,
+        "height": 1920,
+        "length": 97,
+        "batch_size": 1
+      },
+      "_meta": {
+        "title": "OS:latent_full"
+      }
+    },
+    "50": {
+      "class_type": "SGSpeedRamp",
+      "inputs": {
+        "images": [
+          "34",
+          0
+        ],
+        "curve": "linear",
+        "hit_at": 0.6,
+        "blend": false
+      },
+      "_meta": {
+        "title": "OS:ramp"
+      }
+    },
+    "51": {
+      "class_type": "SGGradeChip",
+      "inputs": {
+        "images": [
+          "50",
+          0
+        ],
+        "chip": "none",
+        "grain_amount": 0.0,
+        "seed": 42
+      },
+      "_meta": {
+        "title": "OS:grade"
+      }
+    },
+    "52": {
+      "class_type": "SGRecipeEmbed",
+      "inputs": {
+        "images": [
+          "51",
+          0
+        ],
+        "preset": "petrify",
+        "seed": 11,
+        "recipe_base_url": "https://github.com/lightbrushproject/opensauce/blob/main/recipes/",
+        "models": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors\ngemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors\nltx-2.5-video-vae-bf16.safetensors\nltx-2.5-audio-vae-bf16.safetensors\nqwen-image-edit-2511-Q4_K_M.gguf (stage)\nqwen_2.5_vl_7b_fp8_scaled.safetensors (stage)\nqwen_image_vae.safetensors (stage)\nBiRefNet General.safetensors (stage)",
+        "extra_json": "{\"stage_workflow\": \"workflows/_stage_petrify_qwen.api.json\", \"inputs\": [{\"name\": \"input_01.jpg\", \"sha256\": \"5b2784fafae54fc20ed4c3d570e0b49595434ac73f24f6ddc11f89bd344dcaea\"}]}"
+      },
+      "_meta": {
+        "title": "OS:recipe"
+      }
+    },
+    "11": {
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "OS:image_end"
+      },
+      "inputs": {
+        "image": "petrify_stone_00010_.png"
+      },
+      "is_changed": [
+        "d09444303ca2a45e5594ec0f427f3ac8c51a29059effa0e83a9f8fbcb6987d47"
+      ]
+    },
+    "12": {
+      "class_type": "ResizeImageMaskNode",
+      "_meta": {
+        "title": "OS:resize_end"
+      },
+      "inputs": {
+        "input": [
+          "11",
+          0
+        ],
+        "resize_type": "scale dimensions",
+        "resize_type.width": 1088,
+        "resize_type.height": 1920,
+        "resize_type.crop": "center",
+        "scale_method": "lanczos"
+      }
+    },
+    "13": {
+      "class_type": "LTXVPreprocess",
+      "_meta": {
+        "title": "LTXVPreprocess"
+      },
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "14": {
+      "class_type": "LTXVPreprocess",
+      "_meta": {
+        "title": "LTXVPreprocess"
+      },
+      "inputs": {
+        "image": [
+          "12",
+          0
+        ],
+        "img_compression": 18
+      }
+    },
+    "70": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide_first"
+      },
+      "inputs": {
+        "positive": [
+          "8",
+          0
+        ],
+        "negative": [
+          "8",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "43",
+          0
+        ],
+        "image": [
+          "13",
+          0
+        ],
+        "frame_idx": 0,
+        "strength": 1.0
+      }
+    },
+    "77": {
+      "class_type": "LTXVAddGuide",
+      "_meta": {
+        "title": "OS:guide_last"
+      },
+      "inputs": {
+        "positive": [
+          "70",
+          0
+        ],
+        "negative": [
+          "70",
+          1
+        ],
+        "vae": [
+          "3",
+          0
+        ],
+        "latent": [
+          "70",
+          2
+        ],
+        "image": [
+          "14",
+          0
+        ],
+        "frame_idx": 96,
+        "strength": 0.9
+      }
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "preset": "levitate",
+  "model": "LTX-2.5 distilled int8 (workflows/_base_ltx25_i2v.api.json)",
+  "fps": 24,
+  "frames": 97,
+  "prompt_fill": {
+    "subject": "man",
+    "ground": "ground",
+    "hair_or_hood": "long dark hair",
+    "particles": "golden particles swirling around him, "
+  },
+  "goldens": [
+    {
+      "input": "input_01.jpg",
+      "seed": 11,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": true,
+      "note": "v3 render: rise ~30% frame, glow/text/face hold",
+      "expected": {
+        "file": "expected/input_01_seed11_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "wall_s": 60.4,
+        "recipe": "df1f21c07f",
+        "sha256": "07255009045c44742a497c0565bf09d65d750ca9f55320e998512cbd65114778",
+        "pass": true,
+        "observation": "rise reads as a lift (feet ~15% of frame height off the sand by f96) with a gentle camera ease-in (subject ~1.2x larger by f96); eyes, forearm glow and shirt text hold; QR on f96",
+        "strip": "tmp/obs/golden_final/levitate_g01/strip.png"
+      }
+    },
+    {
+      "input": "input_02.jpg",
+      "seed": 22,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": true,
+      "note": "v3 render: clean rise, small subject intact",
+      "expected": {
+        "file": "expected/input_02_seed22_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "wall_s": 51.5,
+        "recipe": "705b2d46ba",
+        "sha256": "879dbfe8b46e18e393a8f0071c6bc4a1a6f963809cfea15c3eebd46ce03d27bf",
+        "pass": null,
+        "observation": "DIFFERS from 720p ('clean rise'): the camera pushes in hard while he rises (subject ~2.5x larger f0->f96, feet cut by the bottom edge at f96), so it reads as rise + dolly-in, against the preset's locked-off camera; face/eyes/text hold, dust kick at lift-off. Needs an review; not re-tuned",
+        "strip": "tmp/obs/golden_final/levitate_expected_input_02_seed22/strip.png"
+      }
+    },
+    {
+      "input": "input_03.jpg",
+      "seed": 33,
+      "size": [
+        704,
+        1280
+      ],
+      "pass": null,
+      "note": "new 1088x1920 Qwen-Image-Edit-2511 avatar still (examples/_subjects/goldens-source.json: avatar_highway.jpg); not rendered yet (1080p golden pass pending)"
+    }
+  ],
+  "source": "examples/_subjects/goldens-source.json",
+  "expected_note": "1080p finals from python scripts/render_goldens.py --size final; hashes in examples/RENDER-LOG.md"
+}

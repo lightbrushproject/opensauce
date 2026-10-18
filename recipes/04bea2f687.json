@@ -1,0 +1,103 @@
+{
+  "schema": "opensauce.recipe/1",
+  "id": "04bea2f687",
+  "created": "2026-10-17T09:14:39+00:00",
+  "preset": "trailer",
+  "seed": 11,
+  "inputs": [
+    {
+      "name": "input_01.jpg",
+      "sha256": "72c87c11a9d47932810b6bfd5cadf08d4bb15b4c3d5be6ab806c8f2c2007820c"
+    }
+  ],
+  "models": [
+    "LTX-2.5 distilled int8"
+  ],
+  "extra": {
+    "shots": [
+      {
+        "name": "vertigo",
+        "file": "vertigo_g01_v3_00001_.mp4",
+        "recipe": null
+      },
+      {
+        "name": "crash_zoom",
+        "file": "crash_zoom_g01_v2_00001_.mp4",
+        "recipe": null
+      },
+      {
+        "name": "levitate",
+        "file": "levitate25v3_g01.mp4",
+        "recipe": null
+      },
+      {
+        "name": "earth_fly",
+        "file": "earth_zoom_g01.mp4",
+        "recipe": "7981c4090d"
+      }
+    ],
+    "title": "OPEN SAUCE",
+    "subtitle": "LIGHTBRUSH"
+  },
+  "api_workflow": {
+    "plan": {
+      "fps": 24,
+      "shots": [
+        {
+          "name": "vertigo",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 24,
+          "in_end": 59,
+          "src_frames": 36,
+          "out_start": 0,
+          "out_end": 35,
+          "out_frames": 36
+        },
+        {
+          "name": "crash_zoom",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 0,
+          "in_end": 36,
+          "src_frames": 37,
+          "out_start": 36,
+          "out_end": 72,
+          "out_frames": 37
+        },
+        {
+          "name": "levitate",
+          "ramp": "linear",
+          "hit_at": 0.6,
+          "in_start": 22,
+          "in_end": 76,
+          "src_frames": 55,
+          "out_start": 73,
+          "out_end": 127,
+          "out_frames": 55
+        },
+        {
+          "name": "earth_fly",
+          "ramp": "speed_up",
+          "hit_at": 0.6,
+          "in_start": 40,
+          "in_end": 276,
+          "src_frames": 237,
+          "out_start": 128,
+          "out_end": 223,
+          "out_frames": 96
+        }
+      ],
+      "title": {
+        "out_start": 224,
+        "out_end": 266,
+        "out_frames": 43,
+        "fade_in_frames": 3
+      },
+      "total_frames": 267,
+      "total_s": 11.125,
+      "qr_frames": 12
+    },
+    "grade_chip": "warm_film"
+  }
+}

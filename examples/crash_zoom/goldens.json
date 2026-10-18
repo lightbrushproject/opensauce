@@ -1,0 +1,104 @@
+{
+  "preset": "crash_zoom",
+  "model": "LTX-2.5 distilled int8 (workflows/crash_zoom.api.json)",
+  "fps": 24,
+  "frames": 97,
+  "intensity": 0.5,
+  "guide_strength": 0.8,
+  "prompt_fill": "presets/crash_zoom.json prompt_module.defaults",
+  "goldens": [
+    {
+      "input": "input_01.jpg",
+      "seed": 11,
+      "size": [
+        704,
+        1280
+      ],
+      "target_bbox": [
+        0.42,
+        0.4,
+        0.58,
+        0.5
+      ],
+      "pass": true,
+      "render": "outputs/crash_zoom/crash_zoom_g01_v2 (final graph: hole fill + depth fit + attention mask)",
+      "measured": {
+        "scale_f12": 2.22,
+        "scale_f24": 2.86,
+        "scale_final": 3.03,
+        "centre_drift_x": 0.001,
+        "last_frame_mean": 116.9,
+        "qr_decodes": true
+      },
+      "note": "v2: clean push to 3x, eyes crisp, text legible, no slivers at strip scale",
+      "expected": {
+        "file": "expected/input_01_seed11_final.mp4",
+        "size": [
+          1088,
+          1920
+        ],
+        "wall_s": 174.8,
+        "recipe": "5e3ac09860",
+        "sha256": "c519bc3b585aad51a08e641dc2f3f5876882db7d0cf80aa44cc3afd3aa70cd0d",
+        "pass": true,
+        "observation": "same as 720p v2: hit by f24, holds a ~3x head-and-chest close-up to f96; eyes lit, DEITCH BEATS text crisp, no slivers",
+        "strip": "tmp/obs/golden_final/crash_zoom_expected_input_01_seed11/strip.png"
+      }
+    },
+    {
+      "input": "input_02.jpg",
+      "seed": 22,
+      "size": [
+        704,
+        1280
+      ],
+      "target_bbox": [
+        0.43,
+        0.135,
+        0.58,
+        0.255
+      ],
+      "pass": null,
+      "note": "new 1088x1920 Qwen-Image-Edit-2511 avatar still (examples/_subjects/goldens-source.json: avatar_city.jpg); not rendered yet (1080p golden pass pending); target_bbox = head box (cap top to chin) measured on the still"
+    },
+    {
+      "input": "input_03.jpg",
+      "seed": 33,
+      "size": [
+        1280,
+        704
+      ],
+      "target_bbox": [
+        0.44,
+        0.12,
+        0.58,
+        0.4
+      ],
+      "pass": true,
+      "render": "outputs/crash_zoom/crash_zoom_g03_v2",
+      "measured": {
+        "scale_final": 3.0,
+        "centre_drift_x": 0.002,
+        "last_frame_mean": 79.9,
+        "qr_decodes": true
+      },
+      "note": "v2: 3x face close-up, no black dither; faint speckle on outer hair strands at full zoom",
+      "expected": {
+        "file": "expected/input_03_seed33_final.mp4",
+        "size": [
+          1920,
+          1088
+        ],
+        "wall_s": 162.9,
+        "recipe": "ca06afc816",
+        "sha256": "273c3e507c355cd938afd5ac82a9c335fcb334c2285f1ecd1956f5e7369eb690",
+        "pass": true,
+        "observation": "same as 720p v2: ~3x face close-up by f24, hair strands crisp, no black dither; QR on f96",
+        "strip": "tmp/obs/golden_final/crash_zoom_expected_input_03_seed33/strip.png"
+      }
+    }
+  ],
+  "verdict": "2/3 pass (g01, g03); g02 replaced 2026-10-17 by a medium-shot avatar still, unrendered",
+  "source": "examples/_subjects/goldens-source.json",
+  "expected_note": "1080p finals from python scripts/render_goldens.py --size final; hashes in examples/RENDER-LOG.md"
+}

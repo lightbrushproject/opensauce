@@ -1,0 +1,157 @@
+# ShotGrammar camera-move registry. Phrases are the ones that survived real LTX-2.5 renders
+# (see progress.json learnings). Rules baked in: never name camera equipment, describe static
+# framing as "the framing never changes", never use "camera follows/tracks" (becomes a dolly),
+# name glowing eyes / clothing print so LTX-2.5 does not normalise them away.
+# {subject} is substituted by camera_move.directive().
+#
+# reproject: null  -> prompt-led (no SGReprojectMove stage); `stage` names a separate path/edit stage.
+# reproject.intensity_range: user intensity 0..1 maps linearly onto [lo, hi] of SGReprojectMove intensity.
+# ramp.curve must be an SGSpeedRamp curve; hit_at only matters for "impact".
+
+static_hold:
+  app: false
+  lane: motion-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "Locked-off static shot, the framing never changes and the {subject} stays the same size in frame"
+    - "the {subject} breathes slowly and stays still"
+    - "both eyes stay brightly lit, face sharp and unchanged, clothing print crisp and identical"
+    - "photoreal, cinematic, fine detail"
+  negative_tokens: [camera zoom, dolly, push in, pull out, close-up, cropped head, changing face, melting, warped text, dark eyes, glow fading]
+  reproject: null
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: null
+  notes: "Base for any move where only the subject or material should change. Camera motion words make LTX-2.5 reframe and lose identity."
+
+levitate:
+  app: true
+  lane: motion-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "Locked-off static shot, the framing never changes and the {subject} stays the same size in frame"
+    - "the {subject} slowly lifts off the ground and floats straight upward, feet leaving the ground, hair and loose clothing drifting upward as if weightless"
+    - "eyes and forearms stay brightly lit the whole time, face and eyes stay sharp and unchanged, clothing print stays identical and only on the shirt"
+    - "cinematic, photoreal, smooth motion"
+  intensity_tokens:   # first row whose bound >= intensity wins
+    - [0.35, "barely lifts, toes still brushing the ground"]
+    - [0.75, "lifts a full body-height, slow and steady"]
+    - [1.0, "rises fast and high, clothing whipping upward"]
+  negative_tokens: [static subject, frozen, still image, camera zoom, dolly, push in, pull out, close-up, cropped head, subject leaving the frame, changing face, melting, warped text, dark eyes, glow fading, pattern spreading to pants]
+  reproject: null
+  ramp: {curve: slow_mo_settle, hit_at: 0.6}
+  validate: null
+  notes: "Needs a full-body input with feet and ground visible; half-body crops make LTX invent legs. Do not say the camera follows or keeps him centered (becomes a dolly). Cap intensity at 0.4 when subject bbox height > 70% of frame."
+
+jib_up:
+  app: false
+  lane: motion-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "The view rises smoothly and steadily straight upward while the {subject} stays in place on the ground"
+    - "the horizon sinks lower in frame and more of the scene opens up below and around the {subject}"
+    - "face and eyes stay sharp and unchanged, clothing print stays identical"
+    - "photoreal, cinematic, smooth motion"
+  negative_tokens: [flying forward, moving forward, dolly in, push in, zoom, cut, dissolve, changing face, melting, warped text]
+  reproject: null
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: "may dolly: text-only 'rises straight up and back' flew FORWARD through the canyon in LTX-2.5; confirm on frames before shipping, fall back to pull_back (guide-driven)"
+  notes: "Prompt-led rise of the camera. Unproven; the direction is not guaranteed without guides."
+
+dolly_zoom_out:
+  app: true
+  lane: geometry-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "A {subject} stands still, breathing slowly, golden sparks drift through the air"
+    - "both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible"
+    - "photoreal, cinematic, fine detail"
+  negative_tokens: [blurry face, soft face, changing face, extra face, melting, warped text, misspelled text, dark eyes, glow fading, black holes, black borders, torn edges, smeared, duplicated limbs]
+  reproject: {move: dolly_zoom_out, intensity_range: [0.3, 1.0], ease: ease_in_out, bbox: [0.36, 0.33, 0.64, 0.95], bbox_hint: "full subject body (centred standing figure, 9:16)", hole_mask_grow_px: 24}
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: null
+  notes: "Vertigo default. Camera pulls back, lens zooms in: the world rushes toward the subject, only disocclusion holes. Geometry comes from SGReprojectMove, so the prompt carries no camera words. Shipped vertigo preset used intensity 0.9 and this bbox; the generic centre box [0.3,0.3,0.7,0.7] locks a deeper plane and the subject shrinks (open_sauce probe 2026-10-17)."
+
+dolly_zoom_in:
+  app: false
+  lane: geometry-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "A {subject} stands still, breathing slowly, golden sparks drift through the air"
+    - "both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible"
+    - "photoreal, cinematic, fine detail"
+  negative_tokens: [blurry face, soft face, changing face, extra face, melting, warped text, dark eyes, glow fading, black holes, black borders, torn edges, smeared, duplicated limbs]
+  reproject: {move: dolly_zoom_in, intensity_range: [0.3, 0.8], ease: ease_in_out, bbox: [0.3, 0.3, 0.7, 0.7], bbox_hint: "full subject body", hole_mask_grow_px: 24}
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: "requires an outpainted plate: the lens zooms out past the photo FOV and leaves border holes up to ~70%"
+  notes: "Offer only after the Pull Back outpaint stage has widened the plate."
+
+crash_zoom:
+  app: true
+  lane: geometry-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "A {subject} stands still, breathing slowly, golden sparks drift through the air"
+    - "both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible"
+    - "photoreal, cinematic, fine detail"
+  negative_tokens: [blurry face, soft face, changing face, extra face, melting, warped text, misspelled text, dark eyes, glow fading, black holes, black borders, torn edges, smeared, duplicated limbs]
+  reproject: {move: crash_zoom, intensity_range: [0.375, 0.75], ease: impact, bbox: [0.42, 0.40, 0.58, 0.50], bbox_hint: "face/head box after center-crop", hole_mask_grow_px: 6}
+  ramp: {curve: impact, hit_at: 0.22}
+  validate: null
+  notes: "zoom = 1 + 4*intensity (0.375 is the LAW-2 floor of 2.5x). 0.75 only if the face is >= ~100 px wide. Prompt names only the subject: no zoom/push/close-up words."
+
+push_in:
+  app: true
+  lane: geometry-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "A {subject} stands still, breathing slowly"
+    - "both eyes stay brightly lit, face sharp and unchanged, shirt text crisp and legible"
+    - "photoreal, cinematic, fine detail"
+  negative_tokens: [changing face, extra face, melting, warped text, dark eyes, glow fading, black holes, torn edges, smeared, duplicated limbs]
+  reproject: {move: push_in, intensity_range: [0.15, 0.8], ease: ease_in_out, bbox: null, bbox_hint: null, hole_mask_grow_px: 12}
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: "keep gentle on small subjects: pushing in lets LTX invent a new face and text"
+  notes: "Slow depth push (SGReprojectMove push_in); guides carry the motion."
+
+pull_back:
+  app: true
+  lane: geometry-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "A {subject} stands in the scene, the view pulls back steadily and smoothly in one continuous move, the framing expands to reveal the surroundings so he becomes small in the middle"
+    - "warm soft daylight, light haze, photoreal, cinematic, fine detail, no cuts"
+  negative_tokens: [cut, dissolve, crossfade, double exposure, split screen, picture in picture, text overlay, black frames, fade to black, extra face, melting, duplicated limbs]
+  reproject: {move: pull_out, intensity_range: [0.2, 0.8], ease: ease_in_out, bbox: null, bbox_hint: null, hole_mask_grow_px: 12}
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: "for a large reveal use earth_zoom (outpainted plate + SGEarthZoomPath); text-only pull-back flew forward"
+  notes: "Guide-driven pull-back inside one perspective. Do not cross eye-level to aerial: any crossfade is a visible dissolve."
+
+earth_zoom:
+  app: false
+  lane: geometry-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "A {subject} standing in the scene. The view pulls back steadily and smoothly in one continuous move, the framing expands to reveal the whole landscape around him, so he becomes small in the middle"
+    - "warm soft daylight, light haze, photoreal, cinematic, fine detail, no cuts"
+  negative_tokens: [cut, dissolve, crossfade, double exposure, split screen, picture in picture, text overlay, black frames, fade to black, extra face, melting, duplicated limbs]
+  reproject: null
+  stage: SGEarthZoomPath
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: "needs the Qwen zoom-out still and measured inner_rect (workflows/earth_zoom.api.json); no SGReprojectMove stage"
+  notes: "Geometry comes from SGEarthZoomPath guides, not SGReprojectMove, so the reproject outputs are none. 4x per stage per LAW-2."
+
+petrify:
+  app: false
+  lane: material-led
+  default_seconds: 4.0
+  prompt_tokens:
+    - "A {subject} holds still as grey stone spreads over him from his feet upward, turning his skin, hair, cap, shirt and jeans into weathered carved grey marble, until he is a motionless stone statue with the same face, his two eyes fading to dim amber embers"
+    - "fine grey dust falls from the stone and drifts down"
+    - "the surroundings behind him stay unchanged, framing never changes"
+    - "photoreal, cinematic, fine detail"
+  negative_tokens: [changing face, extra face, melting, smeared, duplicated limbs, black frames, fade to black, background turning to stone, camera movement, zoom]
+  reproject: null
+  stage: Qwen-Image-Edit stone still as the last guide
+  ramp: {curve: linear, hit_at: 0.6}
+  validate: null
+  notes: "slow_mo_settle compresses the change into the first ~16 frames and holds a frozen statue: keep linear. Needs the stone still as the f96 guide (workflows/_stage_petrify_qwen.api.json)."

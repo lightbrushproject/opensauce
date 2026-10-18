@@ -1,0 +1,15 @@
+[project]
+name = "shotgrammar"
+description = "ShotGrammar: camera-move, recipe and Fork This Shot nodes for OPEN SAUCE."
+version = "0.1.0"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["qrcode", "numpy", "pillow", "mutagen", "imageio-ffmpeg", "pyyaml"]
+
+[project.urls]
+Repository = "https://github.com/lightbrushproject/opensauce"
+
+[tool.comfy]
+PublisherId = "lightbrush"
+DisplayName = "ShotGrammar"
+Icon = ""

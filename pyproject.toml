@@ -1,0 +1,33 @@
+[project]
+name = "opensauce"
+version = "0.1.0"
+description = "Cinematic camera moves as free, open, forkable ComfyUI presets. Every output video carries its own recipe."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+  "comfy-sdk>=0.5",
+  "numpy",
+  "opencv-python-headless>=4.9",
+  "pillow>=10",
+  "imageio-ffmpeg>=0.5",
+  "mutagen>=1.47",
+  "qrcode>=7.4",
+  "pyyaml>=6.0",
+]
+
+[project.urls]
+Repository = "https://github.com/lightbrushproject/opensauce"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+extend-exclude = ["demo/hyperframes", "outputs", "tmp"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501", "UP006", "UP007", "UP035", "B008", "B905", "B007", "B023", "UP015", "UP031"]
+
+[tool.pytest.ini_options]
+testpaths = ["custom_nodes/shotgrammar/tests", "tests"]
+addopts = "-q"

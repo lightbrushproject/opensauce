@@ -1,0 +1,26 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r custom_nodes/shotgrammar/requirements.txt pytest ruff
+      - name: Lint
+        run: ruff check custom_nodes/shotgrammar scripts app tests
+      - name: Validate workflows and presets
+        run: python scripts/validate_workflows.py
+      - name: Tests
+        run: pytest
